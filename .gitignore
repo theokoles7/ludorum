@@ -1,0 +1,14 @@
+# Build files
+build
+dist
+__pycache__
+*.egg-info
+
+# Logging
+logs
+
+# Input/datasets
+input
+
+# Output/reports
+output
