@@ -1,3 +1,3 @@
-__all__ = ["lucidium_args"]
+__all__ = ["ludicium_args"]
 
-from utils.arguments.lucidium_args  import ARGS
+from utils.arguments.ludicium_args  import ARGS

@@ -1,4 +1,4 @@
-name: lucidium
+name: ludicium
 channels:
   - defaults
 dependencies:
@@ -25,4 +25,4 @@ dependencies:
   - wheel=0.44.0=py312h06a4308_0
   - xz=5.4.6=h5eee18b_1
   - zlib=1.2.13=h5eee18b_1
-prefix: /home/theokoles/miniconda3/envs/lucidium
+prefix: /home/theokoles/miniconda3/envs/ludicium
