@@ -25,4 +25,10 @@ dependencies:
   - wheel=0.44.0=py312h06a4308_0
   - xz=5.4.6=h5eee18b_1
   - zlib=1.2.13=h5eee18b_1
+  - pip:
+      - build==1.2.2.post1
+      - lucidium==0.0.1
+      - packaging==24.2
+      - pyproject-hooks==1.2.0
+      - termcolor==2.5.0
 prefix: /home/theokoles/miniconda3/envs/ludorum

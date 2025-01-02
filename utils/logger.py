@@ -13,7 +13,7 @@ from utils.arguments    import ARGS
 makedirs(f"{ARGS.logging_path}", exist_ok = True)
 
 # Initialize logger
-LOGGER:         Logger =                getLogger("ludicium")
+LOGGER:         Logger =                getLogger("ludorum")
 
 # Set logging level
 LOGGER.setLevel(ARGS.logging_level)

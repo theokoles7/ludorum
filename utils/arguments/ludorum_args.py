@@ -6,7 +6,7 @@ from argparse                   import ArgumentParser, _ArgumentGroup, Namespace
 
 # Initialize primary parser
 _parser:    ArgumentParser =    ArgumentParser(
-    prog =          "ludicium",
+    prog =          "ludorum",
     description =   """Suite of environments, models, & methods in pursuit of achieving organic 
                     reasoning & logic by means of deep reinforcement learning."""
 )
@@ -14,7 +14,7 @@ _parser:    ArgumentParser =    ArgumentParser(
 # Initialize sub-parser
 _subparser: _SubParsersAction = _parser.add_subparsers(
     dest =          "cmd",
-    help =          "Ludicium commands."
+    help =          "Ludorum commands."
 )
 
 # +================================================================================================+
