@@ -12,7 +12,7 @@ if __name__ == "__main__":
         LOGGER.info(BANNER)
     
     # Catch wildcard errors
-    except Exception as e:  LOGGER.critical(f"Unexpected error occurred: {e}")
+    except Exception as e:  LOGGER.critical(f"Unexpected error occurred: {e}", exc_info = True)
     
     # Exit gracefully
     finally:                LOGGER.info("Exiting...")
