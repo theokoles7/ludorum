@@ -12,3 +12,6 @@ input
 
 # Output/reports
 output
+
+# Scratch files
+*scratch*
