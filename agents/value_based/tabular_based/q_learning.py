@@ -7,7 +7,7 @@ from typing                         import override
 
 from torch                          import max
 
-from agents.tabular_based.__base__  import TabularBasedAgent
+from agents.value_based.__base__  import TabularBasedAgent
 
 class QLearningAgent(TabularBasedAgent):
     """Q-Learning Agent class based on the original 1992 paper, by Watkins & Dayan.
