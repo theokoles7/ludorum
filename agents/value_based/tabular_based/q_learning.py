@@ -3,16 +3,16 @@ Dayan."""
 
 __all__ = ["QLearningAgent"]
 
-from typing                         import override
+from typing                                     import override
 
-from torch                          import max
+from torch                                      import max
 
-from agents.value_based.__base__  import TabularBasedAgent
+from agents.value_based.tabular_based.__base__  import TabularBasedAgent
 
 class QLearningAgent(TabularBasedAgent):
-    """Q-Learning Agent class based on the original 1992 paper, by Watkins & Dayan.
+    """Q-Learning Agent class based on the 1992 paper, by Watkins & Dayan.
     
-    This agent is an off-policy TD control method.
+    This agent is an off-policy temporal-difference control method.
     
     Link to paper: https://link.springer.com/content/pdf/10.1007/BF00992698.pdf
     """
