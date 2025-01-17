@@ -38,9 +38,11 @@ class QLearningAgent(TabularBasedAgent):
         """
         # Log for debugging
         self.__logger__.debug(f"Updating Q-table[state: {state}, action {action}]")
+
+        print(self._q_table_)
         
         # Define new action-state value in Q-table
-        self._q_table_[state][action] += self._learning_rate_ * (
+        self._q_table_[state + (action,)] += self._learning_rate_ * (
             reward + (
                 self._discount_rate_ * 0 if done else max(self._q_table_[next_state].item())
             ) - self._q_table_[state][action]

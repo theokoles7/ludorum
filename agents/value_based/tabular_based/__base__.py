@@ -55,7 +55,7 @@ class TabularBasedAgent():
         
         # Initialize Q-Table
         self._q_table_:             Tensor =            zeros(
-                                                            size = self._state_size_ + self._action_size_, 
+                                                            size = self._state_size_ + (self._action_size_,), 
                                                             dtype = float32
                                                         )
         

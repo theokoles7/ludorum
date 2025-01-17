@@ -46,18 +46,13 @@ class GridWorld():
         self.walls:             list[tuple[int]] =  walls
         
         # Define actions
-        self.actions:           dict =              {
-                                                        "up":       (-1,  0),
-                                                        "down":     ( 1,  0),
-                                                        "left":     ( 0, -1),
-                                                        "right":    ( 0,  1)
-                                                    }
+        self.actions:           dict =              [(-1, 0), (1, 0), (0, -1), (0, 1)]
         
         # Log for debugging
         self._logger.debug(f"Initialize Grid-World puzzle ({locals()})")
         
         # Set agent position to (1, 1)
-        self.agent_position:    tuple[int] =        (1, 1)
+        self.agent_position:    list[int] =        [1, 1]
         
     def __str__(self) -> str:
         """# Provide string format of Grid-World puzzle.
@@ -108,7 +103,7 @@ class GridWorld():
         * tuple[int]:   Current agent position.
         """
         # Set agent position to row 1, column 1
-        self.agent_position:    tuple[int] =    (1, 1)
+        self.agent_position:    tuple[int] =    [1, 1]
         
         # Return current state
         return self.state()
@@ -148,6 +143,6 @@ class GridWorld():
         # Provide agent's position, reward/punishment, & completion status
         return (
             self.state(),                                   # Agent's position
-            (1 if self.state() == self.goal() else -0.1),   # Reward/punishment
-            self.state() == self.goal()                     # Completion status
+            (1 if self.state() == self.goal else -0.1),   # Reward/punishment
+            self.state() == self.goal                     # Completion status
         )
