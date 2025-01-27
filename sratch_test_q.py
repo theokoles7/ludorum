@@ -4,7 +4,7 @@ from agents.value_based.tabular_based.q_learning    import QLearningAgent
 from games.grid_world                               import GridWorld
 
 # Initialize game
-environment:    GridWorld =         GridWorld()
+environment:    GridWorld =         GridWorld(walls = [(2,2)], loss = (1,2))
 
 # Print game for demonstration
 print(f"Game prompt:\n{environment}")
@@ -16,7 +16,9 @@ agent:          QLearningAgent =    QLearningAgent(state_size = (3, 4), action_s
 rewards:        list =              []
 
 # For each episode
-for episode in range(50):
+for episode in range(1):
+
+    print(f"EPISODE {episode} =====================================")
 
     # Reset environment
     state = environment.reset()
@@ -44,7 +46,9 @@ for episode in range(50):
         state = next_state
 
         # End episode if end state was reached
-        if done: break
+        if done: 
+            print(f"END STATE REACHED @ STEP {step}")
+            break
 
     # Append episode's reward for the record
     rewards.append(total_reward)

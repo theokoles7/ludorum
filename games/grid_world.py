@@ -14,7 +14,8 @@ class GridWorld():
     def __init__(self,
         rows:       int =               3,
         columns:    int =               4,
-        goal:       tuple[int] =        (3, 4),
+        goal:       tuple[int] =        (2, 3),
+        start:      tuple[int] =        (0, 0),
         loss:       tuple[int] =        None,
         walls:      list[tuple[int]] =  []
     ):
@@ -24,35 +25,32 @@ class GridWorld():
         from the bottom to the top.
 
         ## Args:
-            * rows      (int, optional):            Number of rows with which grid will be 
-                                                    initialized. Defaults to 3.
-            * columns   (int, optional):            Number of columns with which grid will be 
-                                                    initialized. Defaults to 4.
-            * goal  (tuple[int], optional):         Row, column coordinate at which goal square will 
-                                                    be located. Defaults to (3, 4).
-            * loss  (tuple[int], optional):         Row, column coordinate at which loss square will 
-                                                    be located.
-            * wall  (list[tuple[int]], optional):   List of row, column coordinates at which wall 
-                                                    squares will be located.
+            * rows      (int, optional):                Number of rows with which grid will be initialized. Defaults to 3.
+            * columns   (int, optional):                Number of columns with which grid will be initialized. Defaults to 4.
+            * goal      (tuple[int], optional):         Row, column coordinate at which goal square will be located. Defaults to (3, 4).
+            * start     (tuple[int], optional):         Coordinate at which agent should begin the game.
+            * loss      (tuple[int], optional):         Row, column coordinate at which loss square will be located.
+            * walls     (list[tuple[int]], optional):   List of row, column coordinates at which wall squares will be located.
         """
         # Initialize logger
-        self._logger:   Logger =    LOGGER.getChild("grid-world")
+        self.__logger__:        Logger =            LOGGER.getChild("grid-world")
         
         # Define attributes
-        self.rows:              int =               rows
-        self.columns:           int =               columns
-        self.goal:              tuple[int] =        goal
-        self.loss:              tuple[int] =        loss
-        self.walls:             list[tuple[int]] =  walls
+        self._rows_:            int =               rows
+        self._columns_:         int =               columns
+        self._goal_:            tuple[int] =        goal
+        self._loss_:            tuple[int] =        loss
+        self._start_:           tuple[int] =        start
+        self._walls_:           list[tuple[int]] =  walls
         
         # Define actions
-        self.actions:           dict =              [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        self._actions_:         list[tuple[int]] =  [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        
+        # Set agent position to starting point
+        self._agent_position_:  list[int] =         list(self._start_)
         
         # Log for debugging
-        self._logger.debug(f"Initialize Grid-World puzzle ({locals()})")
-        
-        # Set agent position to (1, 1)
-        self.agent_position:    list[int] =        [1, 1]
+        self.__logger__.debug(f"Initialize Grid-World puzzle ({locals()})")
         
     def __str__(self) -> str:
         """# Provide string format of Grid-World puzzle.
@@ -61,49 +59,52 @@ class GridWorld():
             * str: String format of Grid-World puzzle.
         """
         # Initialize with top border
-        grid_str:   str =   "   ┌" + ("───┬" * (self.columns - 1)) + "───┐"
+        grid_str:   str =   "   ┌" + ("───┬" * (self._columns_ - 1)) + "───┐"
         
         # For each row that needs to be printed...
-        for row in reversed(range(1, self.rows + 1)):
+        for row in reversed(range(self._rows_)):
             
             # Append left border with row index
             grid_str += f"\n {row} │"
             
             # For each column that needs to be printed...
-            for column in range(1, self.columns + 1):
+            for column in range(self._columns_):
                 
                 # Format as wall square
-                if (row, column) in self.walls: grid_str += " ╳ │"
+                if (row, column) in self._walls_:   grid_str += " ╳ │"
                 
                 # Format as goal square
-                elif (row, column) == self.goal:  grid_str += f" {colored(text = '█', color = "green")} │"
+                elif (row, column) == self._goal_:  grid_str += f" {colored(text = '█', color = "green")} │"
                 
                 # Format as loss square
-                elif (row, column) == self.loss:  grid_str += f" {colored(text = '█', color = "red")} │"
+                elif (row, column) == self._loss_:  grid_str += f" {colored(text = '█', color = "red")} │"
                 
                 # Otherise, it's a normal, navigable square
                 else: grid_str += "   │"
                 
             # Append right border and dividing line, if not at end of grid
-            if row != 1: grid_str += "\n   ├" + ("───┼" * (self.columns - 1)) + "───┤"
+            if row != 0: grid_str += "\n   ├" + ("───┼" * (self._columns_ - 1)) + "───┤"
             
         # Initialize column index
         col_idx:    str =   "\n   "
             
         # Populate column index
-        for col in range(1, self.columns + 1): col_idx += f"  {col} "
+        for col in range(self._columns_): col_idx += f"  {col} "
         
         # Return final string with bottom border
-        return grid_str + "\n   └" + ("───┴" * (self.columns - 1)) + "───┘" + col_idx
+        return grid_str + "\n   └" + ("───┴" * (self._columns_ - 1)) + "───┘" + col_idx
     
-    def reset(self) -> tuple[int]:
-        """# Reset puzzle; Move agent to bottom left corner (1, 1).
+    def reset(self) -> list[int]:
+        """# Reset puzzle; Move agent to bottom left corner (0, 0).
         
         ## Returns:
         * tuple[int]:   Current agent position.
         """
         # Set agent position to row 1, column 1
-        self.agent_position:    tuple[int] =    [1, 1]
+        self._agent_position_:  list[int] = list(self._start_)
+
+        # Log for debugging
+        self.__logger__.debug(f"Agent reset to starting position: {self._start_}")
         
         # Return current state
         return self.state()
@@ -114,7 +115,7 @@ class GridWorld():
         ## Returns:
             * tuple[int]:   Agent's current position in the puzzle.
         """
-        return self.agent_position
+        return tuple(self._agent_position_)
     
     def step(self,
         action: str
@@ -134,15 +135,37 @@ class GridWorld():
                     * True:     Agent has reached goal square.
                     * False:    Agent has not reached goal square.
         """
-        # Update agent's row coordinate
-        self.agent_position[0] = max(0, min(self.rows - 1, self.agent_position[0] + self.actions[action][0]))
+        # Log action for debugging
+        self.__logger__.debug(f"Action submitted: {action}")
+
+        # Calculate new position
+        new_position:   list[int] = [
+            max(0, min(self._rows_ - 1, self._agent_position_[0] + self._actions_[action][0])), # New row
+            max(0, min(self._columns_ - 1, self._agent_position_[1] + self._actions_[action][1]))
+        ]
+
+        # If new position is a wall...
+        if tuple(new_position) in self._walls_:
+
+            # Log for debugging
+            self.__logger__.debug(f"Action leads to wall square at {new_position}")
+
+            # Return original position with puinishment
+            return {
+                self.state(),   # State before action
+                -0.1,           # Punishment
+                False           # End state not reached
+            }
         
-        # Update agent's column coordinate
-        self.agent_position[1] = max(0, min(self.columns - 1, self.agent_position[1] + self.actions[action][1]))
+        # Otherwise, update agent position
+        self._agent_position_ = new_position
+
+        # Log for debugging
+        self.__logger__.debug(f"Step taken (new agent position: {self.state()}, reward: {1 if self.state() == self._goal_ else -0.1}, done: {self.state() == self._goal_})")
         
         # Provide agent's position, reward/punishment, & completion status
         return (
             self.state(),                                   # Agent's position
-            (1 if self.state() == self.goal else -0.1),   # Reward/punishment
-            self.state() == self.goal                     # Completion status
+            (1 if self.state() == self._goal_ else -0.1),   # Reward/punishment
+            self.state() == self._goal_                     # Completion status
         )
