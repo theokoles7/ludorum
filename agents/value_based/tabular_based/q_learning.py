@@ -37,7 +37,7 @@ class QLearningAgent(TabularBasedAgent):
             * done          (bool):         Indicates if agent has reached end state.
         """
         # Log for debugging
-        self.__logger__.debug(f"Updating Q-table[state: {state}, action {action}]")
+        self.__logger__.debug(f"Updating Q-table[state: {state}, action: {action}]")
         
         # Define new action-state value in Q-table
         self._q_table_[state + (action,)] += self._learning_rate_ * (

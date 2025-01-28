@@ -99,7 +99,7 @@ class TabularBasedAgent():
         max_steps:      int =   100,
         **kwargs
     ) -> dict[str, list]:
-        """# Train Tabular-Based Agent on give environment.
+        """# Train Tabular-Based Agent on given environment.
 
         ## Args:
             * environment   (any):              Environment in which to train the agent.
@@ -111,8 +111,11 @@ class TabularBasedAgent():
             * dict:
                 * rewards   (list): Rewards accrued during interaction with the environment.
         """
+        # Log environment for debugging
+        self.__logger__.debug(f"Environment prompt:\n{environment}")
+        
         # Initialize rewards list
-        rewards:    list =  []
+        rewards:    list =  {}
         
         # Initialize progress bar
         with tqdm(
@@ -141,15 +144,16 @@ class TabularBasedAgent():
                     action: int =   self._choose_action_(state = state)
                     
                     # Execute action
-                    next_state, reward, done, _ =   environment.step(action)
+                    next_state, reward, done =   environment.step(action)
                     
                     # Update Q-Table
                     self._update_(
-                        current_state = state, 
+                        state =         state, 
                         action =        action, 
                         reward =        reward, 
                         next_state =    next_state, 
-                        done =          done, **kwargs
+                        done =          done,
+                        **kwargs
                     )
                     
                     # Update total reward
@@ -162,15 +166,23 @@ class TabularBasedAgent():
                     if done: break
                     
                 # Append episode's reward to list
-                rewards.append(total_reward)
+                rewards.update({
+                    episode:    {
+                        "steps_taken":  step,
+                        "reward":       total_reward
+                    }
+                })
                 
                 # Administer exploration rate (epsilon) decay
                 self._decay_epsilon_()
+                
+                # Update progress bar
+                progress_bar.update(1)
             
         return {"rewards": rewards}
     
     def _update_(self,
-        current_state:  tuple[int, ...],
+        state:          tuple[int, ...],
         action:         int,
         reward:         float,
         next_state:     tuple[int, ...],
