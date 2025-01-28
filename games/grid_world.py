@@ -35,6 +35,39 @@ class GridWorld():
         # Initialize logger
         self.__logger__:        Logger =            LOGGER.getChild("grid-world")
         
+        # Validate parameters provided
+        assert rows > 0,            f"Row dimension must be greater than zero, got {rows}"
+        assert columns > 0,         f"Column dimension must be greater than zero, got {columns}"
+        assert (
+            goal[0] >= 0            and 
+            goal[0] < rows          and
+            goal[1] >= 0            and 
+            goal[1] < columns
+        ),                          f"Goal coordinate {goal} is out of bounds for environment size ({rows}, {columns})"
+        assert (
+            start[0] >= 0           and 
+            start[0] < rows         and
+            start[1] >= 0           and 
+            start[1] < columns
+        ),                          f"Start coordinate {start} is out of bounds for environment size ({rows}, {columns})"
+        assert (
+            loss[0] >= 0            and 
+            loss[0] < rows          and
+            loss[1] >= 0            and 
+            loss[1] < columns
+        ),                          f"Loss coordinate {loss} is out of bounds for environment size ({rows}, {columns})"
+        for wall in walls:
+            
+            assert (
+                wall[0] >= 0        and
+                wall[0] < rows      and
+                wall[1] >= 0        and
+                wall[1] < columns
+            ),                      f"Wall coordinate {wall} is out of bounds for environment size ({rows}, {columns})"
+            
+            assert wall != goal,    f"Wall coordinate {wall} should not be the same as goal square {goal}"
+        assert goal != loss,        f"Loss square {loss} should not be the same as goal square {goal}"
+        
         # Define attributes
         self._rows_:            int =               rows
         self._columns_:         int =               columns
