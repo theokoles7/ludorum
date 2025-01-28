@@ -44,7 +44,24 @@ class GridWorld():
         self._walls_:           list[tuple[int]] =  walls
         
         # Define actions
-        self._actions_:         list[tuple[int]] =  [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        self._actions_:         dict =              {
+                                                        0:  {
+                                                                "name":     "DOWN",
+                                                                "action":   (-1, 0)
+                                                            },
+                                                        1:  {
+                                                                "name":     "UP",
+                                                                "action":   (1, 0)
+                                                            },
+                                                        2:  {
+                                                                "name":     "LEFT",
+                                                                "action":   (0, -1)
+                                                            },
+                                                        3:  {
+                                                                "name":     "RIGHT",
+                                                                "action":   (0, 1)
+                                                            }
+                                                    }
         
         # Set agent position to starting point
         self._agent_position_:  list[int] =         list(self._start_)
@@ -71,13 +88,16 @@ class GridWorld():
             for column in range(self._columns_):
                 
                 # Format as wall square
-                if (row, column) in self._walls_:   grid_str += " ╳ │"
+                if (row, column) in self._walls_:                   grid_str += " ╳ │"
+                
+                # Format as agent position
+                elif (row, column) == tuple(self._agent_position_): grid_str += f" {colored(text = 'A', color = "yellow")} │"
                 
                 # Format as goal square
-                elif (row, column) == self._goal_:  grid_str += f" {colored(text = '█', color = "green")} │"
+                elif (row, column) == self._goal_:                  grid_str += f" {colored(text = '█', color = "green")} │"
                 
                 # Format as loss square
-                elif (row, column) == self._loss_:  grid_str += f" {colored(text = '█', color = "red")} │"
+                elif (row, column) == self._loss_:                  grid_str += f" {colored(text = '█', color = "red")} │"
                 
                 # Otherise, it's a normal, navigable square
                 else: grid_str += "   │"
@@ -136,13 +156,30 @@ class GridWorld():
                     * False:    Agent has not reached goal square.
         """
         # Log action for debugging
-        self.__logger__.debug(f"Action submitted: {action}")
+        self.__logger__.debug(f"Action submitted: {self._actions_[action]["name"]}")
 
         # Calculate new position
         new_position:   list[int] = [
-            max(0, min(self._rows_ - 1, self._agent_position_[0] + self._actions_[action][0])), # New row
-            max(0, min(self._columns_ - 1, self._agent_position_[1] + self._actions_[action][1]))
+            self._agent_position_[0] + self._actions_[action]["action"][0], # New row
+            self._agent_position_[1] + self._actions_[action]["action"][1]  # New column
         ]
+        
+        # If new position is out of bounds...
+        if (
+            new_position[0] < 0                     or
+            new_position[0] > self._rows_ - 1       or
+            new_position[1] < 0                     or
+            new_position[1] > self._columns_ - 1
+        ):
+            # Log for debugging
+            self.__logger__.debug(f"Action leads to out of bounds")
+            
+            # Return original position with punishment
+            return (
+                self.state(),   # State before action
+                -0.1,           # Punishment
+                False           # End state not reached
+            )
 
         # If new position is a wall...
         if tuple(new_position) in self._walls_:
@@ -150,18 +187,32 @@ class GridWorld():
             # Log for debugging
             self.__logger__.debug(f"Action leads to wall square at {new_position}")
 
-            # Return original position with puinishment
-            return {
+            # Return original position with punishment
+            return (
                 self.state(),   # State before action
                 -0.1,           # Punishment
                 False           # End state not reached
-            }
+            )
+
+        # If new position is loss square...
+        if tuple(new_position) == self._loss_:
+
+            # Log for debugging
+            self.__logger__.debug(f"New position is loss sqaure. Agent loses.")
+
+            # Return original position with punishment
+            return (
+                self.state(),   # State before action
+                -1,             # Punishment
+                True            # End state not reached
+            )
         
         # Otherwise, update agent position
         self._agent_position_ = new_position
 
         # Log for debugging
         self.__logger__.debug(f"Step taken (new agent position: {self.state()}, reward: {1 if self.state() == self._goal_ else -0.1}, done: {self.state() == self._goal_})")
+        self.__logger__.debug(f"Current state of environment:\n{self.__str__()}")
         
         # Provide agent's position, reward/punishment, & completion status
         return (
