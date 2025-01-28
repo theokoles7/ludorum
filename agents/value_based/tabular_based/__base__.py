@@ -115,7 +115,13 @@ class TabularBasedAgent():
         self.__logger__.debug(f"Environment prompt:\n{environment}")
         
         # Initialize rewards list
-        rewards:    list =  {}
+        results:    list =  {
+            "episodes": {},
+            "max":      {
+                "max_reward":   -999,
+                "steps_taken":  0
+            }
+        }
         
         # Initialize progress bar
         with tqdm(
@@ -165,8 +171,14 @@ class TabularBasedAgent():
                     # Break from episode if agent has reached end state
                     if done: break
                     
+                # Update running maximum results if new record is achieved
+                if total_reward > results["max"]["max_reward"]: results["max"].update({
+                    "max_reward":   total_reward,
+                    "steps_taken":  step
+                })
+                    
                 # Append episode's reward to list
-                rewards.update({
+                results["episodes"].update({
                     episode:    {
                         "steps_taken":  step,
                         "reward":       total_reward
@@ -179,7 +191,7 @@ class TabularBasedAgent():
                 # Update progress bar
                 progress_bar.update(1)
             
-        return {"rewards": rewards}
+        return results
     
     def _update_(self,
         state:          tuple[int, ...],
