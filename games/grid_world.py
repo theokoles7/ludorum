@@ -143,16 +143,16 @@ class GridWorld(Environment):
             for column in range(self._columns_):
                 
                 # Format as wall square
-                if (row, column) in self._walls_:                   grid_str += " ╳ │"
+                if (row, column) in self._walls_:                   grid_str += " █ │"
                 
                 # Format as agent position
                 elif (row, column) == tuple(self._agent_position_): grid_str += f" {colored(text = 'A', color = "yellow")} │"
                 
                 # Format as goal square
-                elif (row, column) == self._goal_:                  grid_str += f" {colored(text = '◉', color = "green")} │"
+                elif (row, column) == self._goal_:                  grid_str += f" {colored(text = '◯', color = "green")} │"
                 
                 # Format as loss square
-                elif (row, column) == self._loss_:                  grid_str += f" {colored(text = '◎', color = "red")} │"
+                elif (row, column) == self._loss_:                  grid_str += f" {colored(text = '╳', color = "red")} │"
                 
                 # Otherise, it's a normal, navigable square
                 else: grid_str += "   │"

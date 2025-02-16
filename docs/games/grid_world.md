@@ -41,6 +41,6 @@ The game environment ought to appear as:
 Where:
 
 * `A` is the current agent position.
-* `◉` (solid target) is the goal square.
-* `◎` (hollow target) is the loss square.
-* `╳`'s are wall squares, to which the agent cannot move to.
+* `◯` is the goal square.
+* `╳` is the loss square.
+* `█`'s are wall squares, to which the agent cannot move to.
