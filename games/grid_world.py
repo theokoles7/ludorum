@@ -2,13 +2,14 @@
 
 __all__ = ["GridWorld"]
 
-from logging    import Logger
+from logging        import Logger
 
-from termcolor  import colored
+from termcolor      import colored
 
-from utils      import LOGGER
+from games.__base__ import Environment
+from utils          import LOGGER
 
-class GridWorld():
+class GridWorld(Environment):
     """Grid World game environment."""
     
     def __init__(self,
@@ -17,7 +18,8 @@ class GridWorld():
         goal:       tuple[int] =        (2, 3),
         start:      tuple[int] =        (0, 0),
         loss:       tuple[int] =        None,
-        walls:      list[tuple[int]] =  []
+        walls:      list[tuple[int]] =  [],
+        **kwargs
     ):
         """# Initialize Grid-World game environment.
         
@@ -32,32 +34,48 @@ class GridWorld():
             * loss      (tuple[int], optional):         Row, column coordinate at which loss square will be located.
             * walls     (list[tuple[int]], optional):   List of row, column coordinates at which wall squares will be located.
         """
+        print(locals())
+        # Initialize Environment object
+        super(GridWorld, self).__init__()
+        
         # Initialize logger
         self.__logger__:        Logger =            LOGGER.getChild("grid-world")
         
-        # Validate parameters provided
+        # Ensure state dimensions are greater than zero
         assert rows > 0,            f"Row dimension must be greater than zero, got {rows}"
         assert columns > 0,         f"Column dimension must be greater than zero, got {columns}"
+        
+        # Assert that goal square exists within state dimensions
         assert (
             goal[0] >= 0            and 
             goal[0] < rows          and
             goal[1] >= 0            and 
             goal[1] < columns
         ),                          f"Goal coordinate {goal} is out of bounds for environment size ({rows}, {columns})"
+        
+        # Assert that start square exists within state dimensions
         assert (
             start[0] >= 0           and 
             start[0] < rows         and
             start[1] >= 0           and 
             start[1] < columns
         ),                          f"Start coordinate {start} is out of bounds for environment size ({rows}, {columns})"
-        assert (
-            loss[0] >= 0            and 
-            loss[0] < rows          and
-            loss[1] >= 0            and 
-            loss[1] < columns
-        ),                          f"Loss coordinate {loss} is out of bounds for environment size ({rows}, {columns})"
+        
+        # If a loss square was specified...
+        if loss is not None:
+            
+            # Assert that loss square exists within state dimensions
+            assert (
+                loss[0] >= 0        and 
+                loss[0] < rows      and
+                loss[1] >= 0        and 
+                loss[1] < columns
+            ),                      f"Loss coordinate {loss} is out of bounds for environment size ({rows}, {columns})"
+        
+        # For each wall coordinate provided...
         for wall in walls:
             
+            # Assert that wall square exists within state dimensions
             assert (
                 wall[0] >= 0        and
                 wall[0] < rows      and
@@ -65,10 +83,14 @@ class GridWorld():
                 wall[1] < columns
             ),                      f"Wall coordinate {wall} is out of bounds for environment size ({rows}, {columns})"
             
+            # Assert that wall square is not being placed on goal square
             assert wall != goal,    f"Wall coordinate {wall} should not be the same as goal square {goal}"
+            
+        # Assert that loss square is not being place on goal square
         assert goal != loss,        f"Loss square {loss} should not be the same as goal square {goal}"
         
         # Define attributes
+        self.__state_size__:    tuple[int] =        (rows, columns)
         self._rows_:            int =               rows
         self._columns_:         int =               columns
         self._goal_:            tuple[int] =        goal
@@ -77,7 +99,7 @@ class GridWorld():
         self._walls_:           list[tuple[int]] =  walls
         
         # Define actions
-        self._actions_:         dict =              {
+        self.__actions__:       dict =              {
                                                         0:  {
                                                                 "name":     "DOWN",
                                                                 "action":   (-1, 0)
@@ -189,12 +211,12 @@ class GridWorld():
                     * False:    Agent has not reached goal square.
         """
         # Log action for debugging
-        self.__logger__.debug(f"Action submitted: {self._actions_[action]["name"]}")
+        self.__logger__.debug(f"Action submitted: {self.__actions__[action]["name"]}")
 
         # Calculate new position
         new_position:   list[int] = [
-            self._agent_position_[0] + self._actions_[action]["action"][0], # New row
-            self._agent_position_[1] + self._actions_[action]["action"][1]  # New column
+            self._agent_position_[0] + self.__actions__[action]["action"][0], # New row
+            self._agent_position_[1] + self.__actions__[action]["action"][1]  # New column
         ]
         
         # If new position is out of bounds...
