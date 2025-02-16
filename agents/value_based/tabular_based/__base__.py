@@ -8,8 +8,10 @@ from numpy.random   import rand, randint
 from torch          import argmax, float32, Tensor, zeros
 from tqdm           import tqdm
 
+from utils          import LOGGER
+
 class TabularBasedAgent():
-    """# Base class for tablue, value-based reinforcement learning agents.
+    """# Base class for tabular, value-based reinforcement learning agents.
     
     This class provides common functionality and attributes shared acros tabular agents such as 
     Q-Learning, SARSA, Monte Carlo Control, etc.
@@ -29,7 +31,8 @@ class TabularBasedAgent():
         action_size:        int,
         learning_rate:      float           = 0.1,
         discount_rate:      float           = 0.99,
-        exploration_rate:   float           = 1.0
+        exploration_rate:   float           = 1.0,
+        **kwargs
     ):
         """# Initialize Tabular-Based agent.
 
@@ -44,7 +47,7 @@ class TabularBasedAgent():
                                                     Defaults to 1.0.
         """
         # Declare logger
-        self.__logger__:            Logger
+        self.__logger__:            Logger =        LOGGER.getChild(self.__class__.__name__.lower())
         
         # Define agent attributes
         self._state_size_:          tuple[int] =    state_size
@@ -158,8 +161,7 @@ class TabularBasedAgent():
                         action =        action, 
                         reward =        reward, 
                         next_state =    next_state, 
-                        done =          done,
-                        **kwargs
+                        done =          done
                     )
                     
                     # Update total reward
