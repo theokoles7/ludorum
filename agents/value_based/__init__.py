@@ -1,3 +1,12 @@
-__all__ = ["function_approximation", "multi_step_temporal_difference", "tabular_baesd"]
+"""Value-based Agents package."""
 
-from agents.value_based.tabular_based.q_learning    import QLearningAgent
+__all__ =   [
+                # Function Approximation
+                # Multi-Step Temporal Difference
+                # Tabular-based
+                "QLearningAgent"
+            ]
+
+from agents.value_based.function_approximation          import *
+from agents.value_based.multi_step_temporal_difference  import *
+from agents.value_based.tabular_based                   import *

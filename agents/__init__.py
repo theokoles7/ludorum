@@ -1,5 +1,20 @@
-__all__ = ["model_based", "tablue_based"]
+"""Agents package."""
 
-from agents.value_based   import (
-    QLearningAgent
-)
+__all__ =   [
+                # Model-based
+                    # Learned Models
+                    # Planning-based
+                # Neurosymbolic
+                    # NeuroSymbolic Inference Network
+                # Policy-based
+                    # Actor-Critic
+                    # Gradient
+                    # Modern Policy Optimization
+                # Value-based
+                    # Function Approximation
+                    # Multi-Step Temporal Difference
+                    # Tabular-based
+                    "QLearningAgent"
+            ]
+
+from agents.value_based   import *
