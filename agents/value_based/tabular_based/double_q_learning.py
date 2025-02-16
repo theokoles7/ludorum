@@ -1,4 +1,4 @@
-"""Implementatio nof Double Q-Learning agent as proposed in the 2010 paper "Double Q-Learning" by 
+"""Implementation of Double Q-Learning agent as proposed in the 2010 paper "Double Q-Learning" by 
 Hado van Hasselt."""
 
 __all__ = ["DoubleQLearningAgent"]

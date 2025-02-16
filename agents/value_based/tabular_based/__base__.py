@@ -1,12 +1,12 @@
 """Base implementation of tabluar, value-based agent."""
 
+__all__ = ["TabularBasedAgent"]
+
 from logging        import Logger
 
 from numpy.random   import rand, randint
 from torch          import argmax, float32, Tensor, zeros
 from tqdm           import tqdm
-
-from utils          import LOGGER
 
 class TabularBasedAgent():
     """# Base class for tablue, value-based reinforcement learning agents.
@@ -25,7 +25,7 @@ class TabularBasedAgent():
     """
     
     def __init__(self,
-        state_size:         tuple[int, ...],
+        state_size:         tuple[int],
         action_size:        int,
         learning_rate:      float           = 0.1,
         discount_rate:      float           = 0.99,
@@ -34,7 +34,7 @@ class TabularBasedAgent():
         """# Initialize Tabular-Based agent.
 
         ## Args:
-            * state_size        (tuple[int, ...]):  Dimensions of state space.
+            * state_size        (tuple[int]):       Dimensions of state space.
             * action_size       (int):              Number of possible actions.
             * learning_rate     (float, optional):  Agent's learning rate for value updates. 
                                                     Defaults to 0.1.
@@ -43,21 +43,21 @@ class TabularBasedAgent():
             * exploration_rate  (float, optional):  Exploration rate for epsilon-greedy policy. 
                                                     Defaults to 1.0.
         """
-        # Initialize logger
-        self.__logger__:            Logger =            LOGGER.getChild(self.__class__.__name__.lower())
+        # Declare logger
+        self.__logger__:            Logger
         
         # Define agent attributes
-        self._state_size_:          tuple[int, ...] =   state_size
-        self._action_size_:         int =               action_size
-        self._learning_rate_:       float =             learning_rate
-        self._discount_rate_:       float =             discount_rate
-        self._exploration_rate_:    float =             exploration_rate
+        self._state_size_:          tuple[int] =    state_size
+        self._action_size_:         int =           action_size
+        self._learning_rate_:       float =         learning_rate
+        self._discount_rate_:       float =         discount_rate
+        self._exploration_rate_:    float =         exploration_rate
         
         # Initialize Q-Table
-        self._q_table_:             Tensor =            zeros(
-                                                            size = self._state_size_ + (self._action_size_,), 
-                                                            dtype = float32
-                                                        )
+        self._q_table_:             Tensor =        zeros(
+                                                        size = self._state_size_ + (self._action_size_,), 
+                                                        dtype = float32
+                                                    )
         
         # Log for debugging
         self.__logger__.debug(f"Agent initialized ({locals()})")
@@ -116,12 +116,12 @@ class TabularBasedAgent():
         
         # Initialize rewards list
         results:    list =  {
-            "episodes": {},
-            "max":      {
-                "max_reward":   -999,
-                "steps_taken":  0
-            }
-        }
+                                "episodes": {},
+                                "max":      {
+                                                "max_reward":   -999,
+                                                "steps_taken":  0
+                                            }
+                            }
         
         # Initialize progress bar
         with tqdm(
