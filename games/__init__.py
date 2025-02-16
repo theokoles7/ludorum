@@ -1,3 +1,3 @@
-__all__ = ["checkers", "chess", "go", "grid_world", "sudoku", "tic_tac_toe"]
+__all__ = ["GridWorld"]
 
 from games.grid_world   import GridWorld

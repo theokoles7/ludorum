@@ -2,7 +2,9 @@
 
 __all__ = ["ARGS"]
 
-from argparse                   import ArgumentParser, _ArgumentGroup, Namespace, _SubParsersAction
+from argparse                       import ArgumentParser, _ArgumentGroup, Namespace, _SubParsersAction
+
+from utils.arguments.command_args   import *
 
 # Initialize primary parser
 _parser:    ArgumentParser =    ArgumentParser(
@@ -13,7 +15,7 @@ _parser:    ArgumentParser =    ArgumentParser(
 
 # Initialize sub-parser
 _subparser: _SubParsersAction = _parser.add_subparsers(
-    dest =          "cmd",
+    dest =          "command",
     help =          "Ludorum commands."
 )
 
@@ -70,6 +72,9 @@ _output.add_argument(
     help =          """Directory under which reports/output data can be located. Defaults to 
                     "./output/"."""
 )
+
+# Add command parsers
+add_game_parser(parent_subparser =  _subparser)
 
 # +================================================================================================+
 # | END ARGUMENTS                                                                                  |
