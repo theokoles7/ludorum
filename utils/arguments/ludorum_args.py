@@ -7,14 +7,14 @@ from argparse                       import ArgumentParser, _ArgumentGroup, Names
 from utils.arguments.command_args   import *
 
 # Initialize primary parser
-_parser:    ArgumentParser =    ArgumentParser(
+_parser_:       ArgumentParser =    ArgumentParser(
     prog =          "ludorum",
     description =   """Suite of environments, models, & methods in pursuit of achieving organic 
                     reasoning & logic by means of deep reinforcement learning."""
 )
 
 # Initialize sub-parser
-_subparser: _SubParsersAction = _parser.add_subparsers(
+_subparser_:    _SubParsersAction = _parser_.add_subparsers(
     dest =          "command",
     help =          "Ludorum commands."
 )
@@ -24,7 +24,7 @@ _subparser: _SubParsersAction = _parser.add_subparsers(
 # +================================================================================================+
 
 # INPUT ============================================================================================
-_input:     _ArgumentGroup =    _parser.add_argument_group(
+_input:         _ArgumentGroup =    _parser_.add_argument_group(
     title =         "Input",
     description =   "Input/dataset directory configuration."
 )
@@ -38,7 +38,7 @@ _input.add_argument(
 )
 
 # LOGGING ==========================================================================================
-_logging:   _ArgumentGroup =    _parser.add_argument_group(
+_logging:       _ArgumentGroup =    _parser_.add_argument_group(
     title =         "Logging",
     description =   "Logging configuration."    
 )
@@ -60,7 +60,7 @@ _logging.add_argument(
 )
 
 # OUTPUT ===========================================================================================
-_output:    _ArgumentGroup =    _parser.add_argument_group(
+_output:        _ArgumentGroup =    _parser_.add_argument_group(
     title =         "Output",
     description =   "Output/reporting directory configuration."
 )
@@ -74,11 +74,11 @@ _output.add_argument(
 )
 
 # Add command parsers
-add_game_parser(parent_subparser =  _subparser)
+add_game_parser(parent_subparser =  _subparser_)
 
 # +================================================================================================+
 # | END ARGUMENTS                                                                                  |
 # +================================================================================================+
 
 # Parse arguments
-ARGS:       Namespace =         _parser.parse_args()
+ARGS:       Namespace =         _parser_.parse_args()

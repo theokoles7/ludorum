@@ -6,10 +6,7 @@ from utils      import ARGS, BANNER, LOGGER
 if __name__ == "__main__":
     """Execute command."""
     
-    # Execute provided command
-    try:
-        
-        # Log banner
+    try:# Log banner
         LOGGER.info(BANNER)
         
         # Match command

@@ -14,8 +14,11 @@ from utils.timestamp    import TIMESTAMP
 # Match command being executed
 match ARGS.command:
 
+    # Experiment
+    case "run-experiment":  _log_path_: str =   f"{ARGS.logging_path}/experiments/{TIMESTAMP}.log"
+
     # Game
-    case "play-game":   _log_path_: str =   f"{ARGS.logging_path}/games/{ARGS.game}/{ARGS.agent}/{TIMESTAMP}.log"
+    case "play-game":       _log_path_: str =   f"{ARGS.logging_path}/games/{ARGS.game}/{ARGS.agent}/{TIMESTAMP}.log"
 
 # Ensure that logging path exists
 makedirs(name = dirname(p = _log_path_), exist_ok = True)

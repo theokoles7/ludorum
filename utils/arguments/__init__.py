@@ -1,3 +1,3 @@
-__all__ = ["ludorum_args"]
+__all__ = ["ARGS"]
 
 from utils.arguments.ludorum_args   import ARGS
