@@ -39,6 +39,9 @@ class GridWorld(Environment):
         
         # Initialize logger
         self.__logger__:        Logger =            LOGGER.getChild("grid-world")
+
+        # Log for debugging
+        self.__logger__.debug(f"Initializing Grid World {locals()}")
         
         # Ensure state dimensions are greater than zero
         assert rows > 0,            f"Row dimension must be greater than zero, got {rows}"
@@ -119,9 +122,6 @@ class GridWorld(Environment):
         
         # Set agent position to starting point
         self._agent_position_:  list[int] =         list(self._start_)
-        
-        # Log for debugging
-        self.__logger__.debug(f"Initialize Grid-World puzzle ({locals()})")
         
     def __str__(self) -> str:
         """# Provide string format of Grid-World puzzle.

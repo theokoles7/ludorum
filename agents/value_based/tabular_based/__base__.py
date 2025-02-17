@@ -49,6 +49,9 @@ class TabularBasedAgent():
         # Declare logger
         self.__logger__:            Logger =        LOGGER.getChild(self.__class__.__name__.lower())
         
+        # Log for debugging
+        self.__logger__.debug(f"Initializing Tabular Agent {locals()}")
+        
         # Define agent attributes
         self._state_size_:          tuple[int] =    state_size
         self._action_size_:         int =           action_size
@@ -61,9 +64,6 @@ class TabularBasedAgent():
                                                         size = self._state_size_ + (self._action_size_,), 
                                                         dtype = float32
                                                     )
-        
-        # Log for debugging
-        self.__logger__.debug(f"Agent initialized ({locals()})")
         
     def _choose_action_(self,
         state:  tuple[int, ...]
@@ -122,7 +122,8 @@ class TabularBasedAgent():
                                 "episodes": {},
                                 "max":      {
                                                 "max_reward":   -999,
-                                                "steps_taken":  0
+                                                "steps_taken":  0,
+                                                "episode":      0
                                             }
                             }
         
@@ -176,7 +177,8 @@ class TabularBasedAgent():
                 # Update running maximum results if new record is achieved
                 if total_reward > results["max"]["max_reward"]: results["max"].update({
                     "max_reward":   total_reward,
-                    "steps_taken":  step
+                    "steps_taken":  step,
+                    "episode":      episode
                 })
                     
                 # Append episode's reward to list
@@ -193,6 +195,7 @@ class TabularBasedAgent():
                 # Update progress bar
                 progress_bar.update(1)
             
+        # Return results to parent process
         return results
     
     def _update_(self,
