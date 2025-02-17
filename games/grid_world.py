@@ -34,7 +34,6 @@ class GridWorld(Environment):
             * loss      (tuple[int], optional):         Row, column coordinate at which loss square will be located.
             * walls     (list[tuple[int]], optional):   List of row, column coordinates at which wall squares will be located.
         """
-        print(locals())
         # Initialize Environment object
         super(GridWorld, self).__init__()
         
