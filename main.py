@@ -11,8 +11,6 @@ if __name__ == "__main__":
         
         # Log banner
         LOGGER.info(BANNER)
-            
-        print(dict(**vars(ARGS)))
         
         # Match command
         match ARGS.command:
