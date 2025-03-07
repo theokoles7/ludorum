@@ -1,5 +1,7 @@
 """Drive application."""
 
+from json       import dumps
+
 from commands   import play_game
 from utils      import ARGS, BANNER, LOGGER
 
@@ -13,7 +15,7 @@ if __name__ == "__main__":
         match ARGS.command:
             
             # Commence game play
-            case "play-game":   play_game(**vars(ARGS))
+            case "play-game":   LOGGER.info(dumps(obj = play_game(**vars(ARGS)), indent = 2, default = str))
             
             # Invalid command
             case _:             LOGGER.error(f"Invalid command provided: {ARGS.command}")
