@@ -117,8 +117,8 @@ class TabularBasedAgent():
         # Log environment for debugging
         self.__logger__.debug(f"Environment prompt:\n{environment}")
         
-        # Initialize rewards list
-        results:    list =  {
+        # Initialize training report
+        results:    dict =  {
                                 "episodes": {},
                                 "max":      {
                                                 "max_reward":   -999,
@@ -169,7 +169,7 @@ class TabularBasedAgent():
                     total_reward += reward
                     
                     # Update current state
-                    state = next_state
+                    state =         next_state
                     
                     # Break from episode if agent has reached end state
                     if done: break
