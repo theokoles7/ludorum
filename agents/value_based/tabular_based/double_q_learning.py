@@ -3,7 +3,11 @@ Hado van Hasselt."""
 
 __all__ = ["DoubleQLearningAgent"]
 
+from random                                     import random
 from typing                                     import override
+
+from numpy                                      import argmax, float32, zeros
+from torch                                      import Tensor
 
 from agents.value_based.tabular_based.__base__  import TabularBasedAgent
 
@@ -28,24 +32,20 @@ class DoubleQLearningAgent(TabularBasedAgent):
     
         # Inherit Q-table attributes from parent _init_ attributes
         super().__init__(
-            state_size = state_size,
-            action_size = action_size,
-            learning_rate = learning_rate,
-            discount_rate = discount_rate,
-            exploration_rate = exploration_rate,
+            state_size =        state_size,
+            action_size =       action_size,
+            learning_rate =     learning_rate,
+            discount_rate =     discount_rate,
+            exploration_rate =  exploration_rate,
             **kwargs
         )
 
         # initialize q-values for tables A and B (Double Q-learning)
-
-        # Q-table A (use existing Q-table)
-        self._q_table_A = self._q_table_
-
-        # Q-table B (define new Q-table)
-        self._q_table_B = zeros(
-            size = self._state_size_ + (self._action_size_,),
-            dtype = float32
-        )
+        self._q_table_A:    Tensor =    self._q_table_
+        self._q_table_B:    Tensor =    zeros(
+                                            shape = self._state_size_ + (self._action_size_,),
+                                            dtype = float32
+                                        )
 
     @override
     def _update_(self,
@@ -55,54 +55,64 @@ class DoubleQLearningAgent(TabularBasedAgent):
         next_state: list[int],
         done:       bool
     ) -> None:
-
-        '''
-        Update state based on the following rules for QA and QB:
+        '''# Update state based on the following rules for QA and QB:
         - QA(s, a) ← QA(s, a) + α [R + γ QB(s', argmax_a' QA(s', a')) - QA(s, a)]
         - QB(s, a) ← QB(s, a) + α [R + γ QA(s', argmax_a' QB(s', a')) - QB(s, a)]
 
         50% chance to update either table 
 
-        Args:
-            state (list[int]): State of the agent before action being taken.
-            action (int): Action chosen by agent.
-            reward (float): Reward yielded by action taken.
-            next_state (list[int]): State of the agent after action is taken.
-            done (bool): Indicates if agent has reached end state.
+        ## Args:
+            * state         (list[int]):    State of the agent before action being taken.
+            * action        (int):          Action chosen by agent.
+            * reward        (float):        Reward yielded by action taken.
+            * next_state    (list[int]):    State of the agent after action is taken.
+            * done          (bool):         Indicates if agent has reached end state.
         
         '''
 
         # Log for debugging
         self.__logger__.debug(f"Updating Q-tables[state: {state}, action: {action}]")
 
-        # Randomly choose to update QA or QB. QA < 0.5, QB >= 0.5
-        if random.random() < 0.5:   # Updating Q-table A
-            if done:
-                next_q_value = 0
+        # Update first Q-table.
+        if random() < 0.5:
+            
+            # If end state has been reached, next Q-value is irrelevant.
+            if done:    next_q_value = 0
+            
+            # Otherwise...
             else:
                 # Find a* (Max Q-value in table A)
-                a_star = argmax(self._q_table_A[next_state]).item()
+                a_star:         float = argmax(self._q_table_A[next_state]).item()
 
                 # Select next value from other Q-table (Table B) based on best action (a_star)
-                next_q_value = self._q_table_B[next_state][a_star].item()
+                next_q_value:   float = self._q_table_B[next_state][a_star].item()
 
 
             # Update Q-table with Q-value for next state
-            self._q_table_A[state][action] += self._learning_rate_ * (
-                reward + self._discount_rate_ * next_q_value - self._q_table_A[state][action]
-            )
-        else:   # Updating Q-table B
-            if done:
-                next_q_value = 0
+            self._q_table_A[state][action] += self._learning_rate_ *    (
+                                                                            reward + self._discount_rate_ * 
+                                                                            next_q_value - 
+                                                                            self._q_table_A[state][action]
+                                                                        )
+        # Otherwise, update second Q-table.
+        else:
+            
+            # If end state has been reached, next Q-value is irrelevant.
+            if done:    next_q_value = 0
+            
+            # Otherwise...
             else:
+                
                 # Find b* (Max Q-value in table B)
-                b_star = argmax(self._q_table_B[next_state]).item()
+                b_star:         float = argmax(self._q_table_B[next_state]).item()
                 
                 # Select next value from other Q-table (Table A) based on best action (b_star)
-                next_q_value = self._q_table_A[next_state][b_star].item()
+                next_q_value:   float = self._q_table_A[next_state][b_star].item()
 
 
             # Update Q-table with Q-value for next state
-            self._q_table_B[state][action] += self._learning_rate_ * (
-                reward + self._discount_rate_ * next_q_value - self._q_table_B[state][action]
-            )
+            self._q_table_B[state][action] +=   self._learning_rate_ *  (
+                                                                            reward + self._discount_rate_ * 
+                                                                            next_q_value - 
+                                                                            self._q_table_B[state][action]
+                                                                        )

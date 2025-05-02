@@ -57,8 +57,9 @@ class SARSAAgent(TabularBasedAgent):
         next_q_value = 0 if done else self._q_table_[next_state][next_action]
 
         # Update table based on SARSA rule
-        self._q_table_[state + (action,)] += 
-        self._learning_rate_ * (
-            reward + self._discount_rate_ *
-            next_q_value - self._q_table_[state][action]
-        )
+        self._q_table_[state + (action,)] +=    (
+                                                    self._learning_rate_ * (
+                                                        reward + self._discount_rate_ *
+                                                        next_q_value - self._q_table_[state][action]
+                                                    )
+                                                )

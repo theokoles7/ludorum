@@ -4,9 +4,9 @@ __all__ =   [
                 # Function Approximation
                 # Multi-Step Temporal Difference
                 # Tabular-based
-                "QLearningAgent"
-                "DoubleQLearningAgent"
-                "SARSAAgent"
+                "QLearningAgent",
+                "DoubleQLearningAgent",
+                "SARSAAgent",
                 "ExpectedSARSAAgent"
             ]
 

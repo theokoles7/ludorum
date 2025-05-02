@@ -14,9 +14,9 @@ def add_double_q_learning_parser(
     """
     # Initialize Double Q-Learning Agent parser
     _parser_:   ArgumentParser =    parent_subparser.add_parser(
-        name =      "double q-learning",
-        help =      "Q-Learning agent (Value-based > Tabular-based)."
-    )
+                                        name =  "double-q-learning",
+                                        help =  "Q-Learning agent (Value-based > Tabular-based)."
+                                    )
     
     # Define Q-Learning Agent arguments
     _parser_.add_argument(
