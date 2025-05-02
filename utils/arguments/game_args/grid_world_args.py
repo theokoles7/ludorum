@@ -78,6 +78,11 @@ def add_grid_world_parser(
     # Add agent parser
     add_q_learning_parser(parent_subparser =    _subparser_)
     
+    # Added 3 agent parsers
+    add_double_q_learning_parser(parent_subparser =    _subparser_)
+    add_sarsa_parser(parent_subparser =    _subparser_)
+    add_expected_sarsa_parser(parent_subparser =    _subparser_)
+    
 # Define function for parsing list of tuples
 def list_of_tuples(
     arg:    str

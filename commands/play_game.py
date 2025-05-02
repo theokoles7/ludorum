@@ -58,6 +58,25 @@ def play_game(
                                                                     **kwargs
                                                                 )
         
+        # Cases for Double Q-learning, SARSA, Expected SARSA
+        case "double q-learning":  agent:          QLearningAgent =    QLearningAgent(
+                                                                    state_size =    environment.state_size(),
+                                                                    action_size =   environment.action_size(),
+                                                                    **kwargs
+                                                                )
+
+        case "sarsa":  agent:          QLearningAgent =    QLearningAgent(
+                                                                    state_size =    environment.state_size(),
+                                                                    action_size =   environment.action_size(),
+                                                                    **kwargs
+                                                                )
+
+        case "expected-sarsa":  agent:          QLearningAgent =    QLearningAgent(
+                                                                    state_size =    environment.state_size(),
+                                                                    action_size =   environment.action_size(),
+                                                                    **kwargs
+                                                                )
+        
         # Invalid agent selection
         case _:                             raise ValueError(f"Invalid agent selection: {agent}")
         

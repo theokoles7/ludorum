@@ -5,6 +5,9 @@ __all__ =   [
                 # Multi-Step Temporal Difference
                 # Tabular-based
                 "QLearningAgent"
+                "DoubleQLearningAgent"
+                "SARSAAgent"
+                "ExpectedSARSAAgent"
             ]
 
 from agents.value_based.function_approximation          import *
