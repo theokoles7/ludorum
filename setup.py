@@ -6,16 +6,14 @@ setup(
     name =              "ludorum",
     version =           "0.0.1",
     author =            (
-                            "Gabriel C. Trahan, "
-                            "Christopher J. Langley"
+                            "Gabriel C. Trahan"
                         ),
     author_email =      (
-                            "gabriel.trahan1@louisiana.edu, "
-                            "christopher.langely1@louisiana.edu"
+                            "gabriel.trahan1@louisiana.edu"
                         ),
     description =       (
-                            "Suite of environments, models, & methods in pursuit of achieving "
-                            "organic reasoning & logic by means of deep reinforcement learning."
+                            "Suite of environments, models, & methods that facilitate research and "
+                            "experimentation in reinforcement learning."
                         ),
     license =           "GNU GENERAL PUBLIC LICENSE Version 3, 29 June 2007",
     license_files =     ("LICENSE"),
