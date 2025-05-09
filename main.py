@@ -1,5 +1,6 @@
 """Drive application."""
 
+from commands   import *
 from utilities  import ARGS, BANNER, LOGGER
 
 if __name__ == "__main__":
@@ -10,6 +11,9 @@ if __name__ == "__main__":
         
         # Match command
         match ARGS.command:
+            
+            # Render an environment visualization.
+            case "render":  render_environment(**vars(ARGS))
             
             # Invalid command
             case _:         LOGGER.error(f"Invalid command provided: {ARGS.command}")

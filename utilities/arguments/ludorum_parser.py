@@ -1,6 +1,8 @@
 """Ludorum application argument definitions and parsing."""
 
-from argparse   import ArgumentParser, _ArgumentGroup, Namespace, _SubParsersAction
+from argparse                       import ArgumentParser, _ArgumentGroup, Namespace, _SubParsersAction
+
+from utilities.arguments.commands   import *
 
 # Initialize primary parser
 _parser_:       ArgumentParser =    ArgumentParser(
@@ -44,6 +46,9 @@ _logging.add_argument(
 # +================================================================================================+
 # | END ARGUMENTS                                                                                  |
 # +================================================================================================+
+
+# Add commands.
+add_render_parser(parent_subparser =    _subparser_)
 
 # Parse arguments
 ARGS:       Namespace =         _parser_.parse_args()
