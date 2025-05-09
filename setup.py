@@ -23,6 +23,7 @@ setup(
     install_requires =  [
                             "numpy",
                             "setuptools",
+                            "termcolor",
                             "torch",
                             "tqdm"
                         ]
