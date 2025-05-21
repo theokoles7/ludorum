@@ -48,7 +48,8 @@ _logging.add_argument(
 # +================================================================================================+
 
 # Add commands.
-add_render_parser(parent_subparser =    _subparser_)
+add_play_parser(    parent_subparser =      _subparser_)
+add_render_parser(  parent_subparser =    _subparser_)
 
 # Parse arguments
 ARGS:       Namespace =         _parser_.parse_args()

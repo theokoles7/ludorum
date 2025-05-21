@@ -2,7 +2,9 @@
 
 __all__ = ["add_grid_world_parser"]
 
-from argparse   import _ArgumentGroup, ArgumentParser, _SubParsersAction
+from argparse                           import _ArgumentGroup, ArgumentParser, _SubParsersAction
+
+from utilities.arguments.agent_parsers  import *
 
 def add_grid_world_parser(
     parent_subparser:   _SubParsersAction
@@ -80,6 +82,9 @@ def add_grid_world_parser(
     # +============================================================================================+
     # | END ARGUMENTS                                                                              |
     # +============================================================================================+
+    
+    # Add agent parsers.
+    add_q_learning_parser(parent_subparser =    _subparser_)
     
 # Define function for parsing list of tuples
 def list_of_tuples(

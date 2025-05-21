@@ -8,9 +8,9 @@ __all__ = ["QLearning"]
 
 from logging            import Logger
 
-from numpy              import float32, ndarray, zeros
+from numpy              import argmax, float32, loadtxt, max, ndarray, savetxt, zeros
 from numpy.random       import rand, randint
-from torch              import argmax, max
+# from torch              import argmax
 from tqdm               import tqdm
 
 from agents.__base__    import Agent
@@ -35,7 +35,7 @@ class QLearning(Agent):
         ## Args:
             * action_space      (int):              Number of possible actions that the agent can 
                                                     take.
-            * state_space       (tuple[int]):       Dimensions of the environment in which the 
+            * state_space       (int):              Dimensions of the environment in which the 
                                                     agent will act.
             * learning_rate     (float, optional):  Agent's learning rate for value updates. 
                                                     Defaults to 0.1.
@@ -48,8 +48,8 @@ class QLearning(Agent):
         self.__logger__:            Logger =        LOGGER.getChild("q-learning")
         
         # Define agent attributes.
-        self._state_size_:          tuple[int] =    state_space
-        self._action_size_:         int =           action_space
+        self._state_space_:         int =           state_space
+        self._action_space_:        int =           action_space
         self._learning_rate_:       float =         learning_rate
         self._discount_rate_:       float =         discount_rate
         self._exploration_rate_:    float =         exploration_rate
@@ -92,7 +92,29 @@ class QLearning(Agent):
             * min_epsilon   (float, optional):  Minimum value for exploration rate (epsilon). 
                                                 Defaults to 0.01.
         """
-        self._exploration_rate_ = max(self._exploration_rate_ * decay_rate, min_epsilon)
+        self._exploration_rate_ = max([self._exploration_rate_ * decay_rate, min_epsilon])
+        
+    def load_model(self,
+        path:   str
+    ) -> None:
+        """# Load agent's model from file.
+
+        ## Args:
+            * path  (str):  Path at which model can be located/loaded.
+        """
+        # Save Q-table to file.
+        self._q_table_: ndarray =   loadtxt(fname = path)  
+        
+    def save_model(self,
+        path:   str
+    ) -> None:
+        """# Save agent's model to file.
+
+        ## Args:
+            * path  (str):  Path at which model will be saved.
+        """
+        # Save Q-table to file.
+        savetxt(fname = path, X = self._q_table_)        
         
     def _train_(self,
         environment:    any,
@@ -100,7 +122,7 @@ class QLearning(Agent):
         max_steps:      int =   100,
         **kwargs
     ) -> dict[str, list]:
-        """# Train Tabular-Based Agent on given environment.
+        """# Train agent on given environment.
 
         ## Args:
             * environment   (any):              Environment in which to train the agent.
@@ -173,7 +195,7 @@ class QLearning(Agent):
                     if done: break
                     
                 # Update running maximum results if new record is achieved.
-                if total_reward > results["max"]["max_reward"]: results["max"].update({
+                if total_reward > results["results"]["max_reward"]: results["results"].update({
                                                                     "max_reward":   total_reward,
                                                                     "steps_taken":  step,
                                                                     "episode":      episode
@@ -197,7 +219,7 @@ class QLearning(Agent):
         return results
     
     def update(self,
-        state:      list[int],
+        state:      int,
         action:     int,
         reward:     float,
         next_state: list[int],

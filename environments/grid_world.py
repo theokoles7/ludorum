@@ -89,7 +89,7 @@ class GridWorld(Environment):
         assert goal != loss,        f"Loss square {loss} should not be the same as goal square {goal}"
         
         # Define attributes
-        self.__state_size__:    tuple[int] =        (rows, columns)
+        self.__state_size__:    int =               rows * columns
         self._rows_:            int =               rows
         self._columns_:         int =               columns
         self._goal_:            tuple[int] =        goal
@@ -189,13 +189,13 @@ class GridWorld(Environment):
         # Return current state.
         return self.state()
     
-    def state(self) -> tuple[int]:
+    def state(self) -> int:
         """# Provide the agent's current position in the puzzle.
 
         ## Returns:
-            * tuple[int]:   Agent's current position in the puzzle.
+            * int:  Agent's current position in the puzzle.
         """
-        return tuple(self._agent_position_)
+        return (self._agent_position_[0] * self._columns_) + self._agent_position_[1]
     
     def step(self,
         action: str
@@ -262,21 +262,21 @@ class GridWorld(Environment):
 
             # Return original position with punishment.
             return (
-                self.state(),   # State before action
+                self.state(),   # Loss square position
                 -1,             # Punishment
-                True            # End state not reached
+                True            # End state reached
             )
         
         # Otherwise, update agent position.
         self._agent_position_ = new_position
 
         # Log for debugging
-        self.__logger__.debug(f"Step taken (new agent position: {self.state()}, reward: {1 if self.state() == self._goal_ else -0.1}, done: {self.state() == self._goal_})")
+        self.__logger__.debug(f"Step taken (new agent position: {self.state()}, reward: {1 if self.state() == self._goal_ else -0.1}, done: {tuple(self._agent_position_) == self._goal_})")
         self.__logger__.debug(f"Current state of environment:\n{self.__str__()}")
         
         # Provide agent's position, reward/punishment, & completion status.
         return (
-            self.state(),                                   # Agent's position
+            self.state(),                                   # Agent's new position
             (1 if self.state() == self._goal_ else -0.1),   # Reward/punishment
-            self.state() == self._goal_                     # Completion status
+            tuple(self._agent_position_) == self._goal_     # Completion status
         )
