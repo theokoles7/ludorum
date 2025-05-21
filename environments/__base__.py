@@ -15,7 +15,7 @@ class Environment(ABC):
         
         # Declare attributes and their types.
         self.__actions__:       dict[int, dict[str, str | tuple]]
-        self.__state_size__:    tuple[int]
+        self.__state_size__:    int
         
     def action_space(self) -> int:
         """# Provide size of environment's action space.

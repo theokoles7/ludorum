@@ -1,5 +1,7 @@
 """Drive application."""
 
+from json       import dumps
+
 from commands   import *
 from utilities  import ARGS, BANNER, LOGGER
 
@@ -11,6 +13,9 @@ if __name__ == "__main__":
         
         # Match command
         match ARGS.command:
+            
+            # Play a game with an agent.
+            case "play":    LOGGER.info(dumps(obj = play_game(**vars(ARGS)), indent = 2, default = str))
             
             # Render an environment visualization.
             case "render":  render_environment(**vars(ARGS))
