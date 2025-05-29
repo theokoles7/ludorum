@@ -8,6 +8,9 @@ and the choice of agent depends on the specific requirements of the task and env
 """
 
 __all__ =   [
+                # Agent Loader.
+                "load_agent",
+                
                 # Abstract Agent.
                 "Agent",
                 
@@ -18,3 +21,47 @@ __all__ =   [
 from agents.__base__        import Agent
 
 from agents.q_learning      import QLearning
+
+
+# Define agent loader function.
+def load_agent(
+    agent:          str,
+    action_space:   any,
+    state_space:    any,
+    **kwargs
+) -> Agent:
+    """# Load Agent
+    
+    Initialize and provide agent based on selection and parameters.
+
+    ## Args:
+        * agent         (str):  Agent selection. For a full list of options, refer to ludorum.agents 
+                                package or documentation.
+        * action_space  (int):  Number of possible actions that the agent can take.
+        * state_space   (int):  Dimensions of the environment in which the agent will act.
+
+    ## Returns:
+        * Agent:    Initialized agent, based on selection and keyword arguments.
+    """
+    from logging            import Logger
+    
+    from utilities          import LOGGER
+    
+    # Initialize logger.
+    __logger__: Logger =    LOGGER.getChild("agent-loader")
+    
+    # Log action for debugging.
+    __logger__.debug(f"Loading agent: {agent} ({kwargs})")
+    
+    # Match agent selection.
+    match agent:
+        
+        # Q-Learning
+        case "q-learning":  return  QLearning(
+                                        action_space =  action_space,
+                                        state_space =   state_space,
+                                        **kwargs
+                                    )
+        
+        # Invalid agent selection.
+        case _:             raise ValueError(f"Invalid agent selected: {agent}")
