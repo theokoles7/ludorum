@@ -147,7 +147,7 @@ class BoxSpace(Space):
             if x.shape != self._shape_: return False
             
             # Indicate if element components are within space range.
-            return all(self._low_ <= x) and all(x <= self._high)
+            return all(self._low_ <= x) and all(x <= self._high_)
             
         # Indicate that element is not contained within space or invalid element type was provided.
         except (ValueError, TypeError): return False
