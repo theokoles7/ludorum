@@ -14,8 +14,8 @@ class Environment(ABC):
         self.__logger__:        Logger
         
         # Declare attributes and their types.
-        self.__actions__:       dict[int, dict[str, str | tuple]]
-        self.__state_size__:    int
+        self._actions_:     dict[int, dict[str, str | tuple]]
+        self._state_size_:  int
         
     def action_space(self) -> int:
         """# Provide size of environment's action space.
@@ -24,7 +24,7 @@ class Environment(ABC):
             * int:  Size of environment's action space.
         """
         # Return size of action space.
-        return len(self.__actions__)
+        return len(self._actions_)
     
     def state_space(self) -> tuple[int]:
         """# Provide dimensions of environment's state space.
@@ -33,4 +33,4 @@ class Environment(ABC):
             * tuple[int]: Dimensions of environment's state space.
         """
         # Return dimensions of state space.
-        return self.__state_size__
+        return self._state_size_

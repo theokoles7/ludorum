@@ -3,6 +3,7 @@
 __all__ = ["add_grid_world_parser"]
 
 from argparse                           import _ArgumentGroup, ArgumentParser, _SubParsersAction
+from ast                                import literal_eval
 
 from utilities.arguments.agent_parsers  import *
 
@@ -16,9 +17,12 @@ def add_grid_world_parser(
     """
     # Initialize Grid World game parser
     _parser_:       ArgumentParser =    parent_subparser.add_parser(
-        name =      "grid-world",
-        help =      """Grid World is a single player game in which an agent has to navigate from the 
-                    start square to the goal square, learning to avoid wall and loss squares."""
+        name =          "grid-world",
+        help =          """Grid World game.""",
+        description =   """Grid World is a simple, discrete, grid-based environment where an agent 
+                        navigates the grid to achieve a goal. The environment consists of a grid 
+                        with rows and columns, where each grid cell can have different attributes, 
+                        such as obstacles, rewards, or special features."""
     )
     
     _subparser_:    _SubParsersAction = _parser_.add_subparsers(
@@ -30,14 +34,14 @@ def add_grid_world_parser(
     # | BEGIN ARGUMENTS                                                                            |
     # +============================================================================================+
     
-    # BOARD DIMENSIONS =============================================================================
-    _dimensions_:   _ArgumentGroup =    _parser_.add_argument_group("Dimensions")
+    # GRID DIMENSIONS ==============================================================================
+    _dimensions_:   _ArgumentGroup =    _parser_.add_argument_group("Grid Dimensions")
     
     _dimensions_.add_argument(
         "--rows",
         type =      int,
-        default =   3,
-        help =      """Number of rows with which grid will be initialized. Defaults to 3."""
+        default =   4,
+        help =      """Number of rows with which grid will be initialized. Defaults to 4."""
     )
     
     _dimensions_.add_argument(
@@ -47,36 +51,124 @@ def add_grid_world_parser(
         help =      """Number of columns with which grid will be initialized. Defaults to 4."""
     )
     
-    # BOARD COMPONENTS =============================================================================
-    _components_:   _ArgumentGroup =    _parser_.add_argument_group("Components")
+    # GRID FEATURES ================================================================================
+    _features_:     _ArgumentGroup =    _parser_.add_argument_group("Grid Features")
     
-    _components_.add_argument(
+    _features_.add_argument(
         "--goal",
         type =      tuple,
-        default =   (2, 3),
-        help =      """Row, column coordinate at which goal square will be located. Defaults to 
-                    (2, 3)."""
+        default =   None,
+        help =      """(row, column) coordinate at which goal square will be located. Defaults to 
+                    top-right corner of grid."""
     )
     
-    _components_.add_argument(
+    _features_.add_argument(
         "--start",
         type =      tuple,
         default =   (0, 0),
-        help =      """Coordinate at which agent will begin the game."""
+        help =      """(row, column) coordinate at which agent will begin the game. Defaults to 
+                    (0, 0) or the bottom-left corner of the grid."""
     )
     
-    _components_.add_argument(
+    _features_.add_argument(
         "--loss",
-        type =      tuple,
-        default =   None,
-        help =      """Row,column coordinate at which loss sqaure will be located."""
+        type =      list_of_tuples,
+        default =   [],
+        help =      """List of (row, column) coordinate at which loss sqaures will be located. 
+                    Example: "[(1, 0), ...]"."""
     )
     
-    _components_.add_argument(
+    _features_.add_argument(
         "--walls",
         type =      list_of_tuples,
         default =   [],
-        help =      """List of row,column coordinates at which wall squares will be loacted."""
+        help =      """List of (row, column) coordinates at which wall squares will be located. 
+                    Example: "[(1, 0), ...]"."""
+    )
+    
+    _features_.add_argument(
+        "--coins",
+        type =      list_of_tuples,
+        default =   [],
+        help =      """List of (row, column) coordinates at which coin squares will be located. 
+                    Example: "[(1, 0), ...]"."""
+    )
+    
+    _features_.add_argument(
+        "--portals",
+        type =      list_of_dictionaries,
+        default =   [],
+        help =      """List of dictionaries mapping "entry" and "exit" coordinates at which portal 
+                    components will be located. Example: "[{'entry': (1,0), 'exit': (0,1)}, 
+                    ...]"."""
+    )
+    
+    _features_.add_argument(
+        "--wrap-map",
+        dest =      "wrap_map",
+        action =    "store_true",
+        default =   False,
+        help =      """Allow agent to pass through grid borders, such that it appears on the 
+                    opposing side of the grid on boundery collisions. Example, if the agent is 
+                    located at (0, 0), and submits the "DOWN" action, the agent's next position will 
+                    be the top most row of column 0."""
+    )
+    
+    # REWARDS & PENALTIES ==========================================================================
+    _rewards_:      _ArgumentGroup =    _parser_.add_argument_group("Rewards & Penalties")
+    
+    _rewards_.add_argument(
+        "--goal-reward",
+        dest =      "goal_reward",
+        type =      float,
+        default =   1.0,
+        help =      """Reward received when agent reaches goal square. Defaults to +1.0."""
+    )
+    
+    _rewards_.add_argument(
+        "--step-penalty",
+        dest =      "step_penalty",
+        type =      float,
+        default =   -0.01,
+        help =      """Cost for each action that the agent takes. Defaults to -0.01."""
+    )
+    
+    _rewards_.add_argument(
+        "--wall-penalty",
+        dest =      "wall_penalty",
+        type =      float,
+        default =   -0.1,
+        help =      """Penalty received in the case that the agent collides with a wall. Defaults 
+                    to -0.1."""
+    )
+    
+    _rewards_.add_argument(
+        "--loss-penalty",
+        dest =      "loss_penalty",
+        type =      float,
+        default =   -0.5,
+        help =      """Penalty received in the case that the agent lands on a loss square. Defaults 
+                    to -0.5."""
+    )
+    
+    _rewards_.add_argument(
+        "--coin-reward",
+        dest =      "coin_reward",
+        type =     float,
+        default =   0.5,
+        help =      """Reward received in the case that the agent lands on a coin square. Defaults 
+                    to +0.5."""
+    )
+    
+    # ANIMATION ====================================================================================
+    _animation_:    _ArgumentGroup =    _parser_.add_argument_group("Animation")
+    
+    _animation_.add_argument(
+        "--render",
+        dest =      "render",
+        action =    "store_true",
+        default =   False,
+        help =      """Animate environment while agent is interacting with it."""
     )
 
     # +============================================================================================+
@@ -86,11 +178,13 @@ def add_grid_world_parser(
     # Add agent parsers.
     add_q_learning_parser(parent_subparser =    _subparser_)
     
-# Define function for parsing list of tuples
+# Define function for parsing list of tuples.
 def list_of_tuples(
     arg:    str
 ) -> list[tuple[int]]:
-    """# Parse string into list of tuples of integers.
+    """# Parse List of Tuples.
+    
+    Parse string argument into list of tuples of integers.
 
     ## Args:
         * arg   (str):  Argument being passed.
@@ -98,4 +192,20 @@ def list_of_tuples(
     ## Returns:
         * list[tuple[int]]: List of tuples of integers.
     """
-    return [tuple(int(element) for element in coordinate.split(",")) for coordinate in arg.split(" ")]
+    return  literal_eval(arg)
+    
+# Define function for parsing list of dictionaries.
+def list_of_dictionaries(
+    arg:    str
+) -> list[dict[str, int]]:
+    """# Parse List of Dictionaries.
+    
+    Parse string argument into list of dictionaries of string to tuples of integers.
+
+    ## Args:
+        * arg   (str):  Argument being passed.
+
+    ## Returns:
+        * list[dict[str, int]]: List of dictionaries.
+    """
+    return  literal_eval(arg)
