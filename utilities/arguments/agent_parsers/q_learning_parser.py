@@ -66,7 +66,8 @@ def add_q_learning_parser(
                     the action that is believed to be optimal based on its current knowledge (i.e., 
                     the action with the highest Q-value). When set high, the agent is more likely to 
                     explore new actions. When low, the agent favors exploiting its current knowledge. 
-                    Defaults to 1.0."""
+                    To utilize a Q-Learning agent as presented in the seminal paper, simply define 
+                    this value as 0.0 to neglect exploration. Defaults to 1.0."""
     )
     
     _exploration_.add_argument(

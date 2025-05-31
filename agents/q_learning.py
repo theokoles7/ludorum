@@ -6,14 +6,15 @@ Link to paper: https://link.springer.com/content/pdf/10.1007/BF00992698.pdf
 
 __all__ = ["QLearning"]
 
-from logging            import Logger
+from logging                import Logger
 
-from numpy              import argmax, float32, full, loadtxt, max, ndarray, savetxt, zeros
-from numpy.random       import normal, rand, randint, uniform
-from tqdm               import tqdm
+from numpy                  import argmax, float32, full, loadtxt, max, ndarray, savetxt, zeros
+from numpy.random           import normal, rand, randint, uniform
+from tqdm                   import tqdm
 
-from agents.__base__    import Agent
-from utilities          import LOGGER
+from agents.__base__        import Agent
+from environments.__base__  import Environment
+from utilities              import LOGGER
 
 class QLearning(Agent):
     """# Q-Learning Agent.
@@ -214,6 +215,9 @@ class QLearning(Agent):
                                                 self._exploration_min_
                                             ])
         
+        # Log action for debugging.
+        self.__logger__.debug(f"Exploration rate updated to {self._exploration_rate_}")
+        
     def load_model(self,
         path:   str
     ) -> None:
@@ -224,6 +228,9 @@ class QLearning(Agent):
         ## Args:
             * path  (str):  Path at which model can be located/loaded.
         """
+        # Log action for debugging.
+        self.__logging__.debug(f"Loading q-table from {path}")
+        
         # Save Q-table to file.
         self._q_table_: ndarray =   loadtxt(fname = path)  
         
@@ -237,6 +244,9 @@ class QLearning(Agent):
         ## Args:
             * path  (str):  Path at which model will be saved.
         """
+        # Log action for debugging.
+        self.__logging__.debug(f"Saving q-table to {path}")
+        
         # Save Q-table to file.
         savetxt(fname = path, X = self._q_table_)  
         
@@ -260,7 +270,7 @@ class QLearning(Agent):
         return argmax(self._q_table_[state]).item()      
         
     def _train_(self,
-        environment:    any,
+        environment:    Environment,
         episodes:       int =   100,
         max_steps:      int =   100,
         **kwargs
@@ -268,7 +278,7 @@ class QLearning(Agent):
         """# Train agent on given environment.
 
         ## Args:
-            * environment   (any):              Environment in which to train the agent.
+            * environment   (Environment):      Environment in which to train the agent.
             * episodes      (int, optional):    Prescribed training episodes. Defaults to 100.
             * max_steps     (int, optional):    Maximum number of steps an agent can make within a 
                                                 single episode. Defaults to 100.
@@ -280,8 +290,8 @@ class QLearning(Agent):
         # Log environment for debugging.
         self.__logger__.debug(f"Environment prompt:\n{environment}")
         
-        # Initialize training report.
-        results:    dict =  {
+        # Initialize holistic game report.
+        game_results:   dict =  {
                                 "episodes": {},
                                 "results":  {
                                                 "max_reward":   -999,
@@ -300,6 +310,14 @@ class QLearning(Agent):
             
             # For each episode prescribed...
             for episode in range(1, episodes + 1):
+        
+                # Initialize episodic report.
+                episode_results:   dict =  {
+                                        "steps":        {},
+                                        "steps_taken":  0,
+                                        "score":        0,
+                                        "metrics":      {}
+                                    }
                 
                 # Update progress bar status.
                 progress_bar.set_postfix(text = f"Episode {episode}/{episodes}")
@@ -311,13 +329,13 @@ class QLearning(Agent):
                 total_reward:   float =     0.0
                 
                 # For each possible step the agent can make...
-                for step in range(max_steps):
+                for step in range(1, max_steps + 1):
                     
                     # Choose an action for current state.
-                    action: int =   self.act(state = state)
+                    action: int =   self.select_action(state = state)
                     
                     # Execute action.
-                    next_state, reward, done =   environment.step(action)
+                    next_state, reward, done, meta =   environment.step(action)
                     
                     # Update Q-Table.
                     self.update(
@@ -330,36 +348,48 @@ class QLearning(Agent):
                     
                     # Update total reward.
                     total_reward += reward
+        
+                    # Append step data.
+                    episode_results["steps"].update({step: {
+                                                    "action":           action,
+                                                    "reward":           reward,
+                                                    "done":             done,
+                                                    "previous_state":   state,
+                                                    "current_state":    next_state,
+                                                    "metrics":          meta
+                                                }})
                     
                     # Update current state.
                     state =         next_state
                     
+                    # Update episode's step counter.
+                    episode_results["steps_taken"] += 1
+                    
                     # Break from episode if agent has reached end state.
                     if done: break
+                
+                    # Administer exploration rate (epsilon) decay.
+                    self.decay_epsilon()
                     
                 # Update running maximum results if new record is achieved.
-                if total_reward > results["results"]["max_reward"]: results["results"].update({
-                                                                    "max_reward":   total_reward,
-                                                                    "steps_taken":  step,
-                                                                    "episode":      episode
-                                                                })
+                if total_reward > game_results["results"]["max_reward"]:    game_results["results"].update({
+                                                                                "max_reward":   total_reward,
+                                                                                "steps_taken":  step,
+                                                                                "episode":      episode
+                                                                            })
+                
+                # Update episodic results.
+                episode_results["score"] =      total_reward
+                episode_results["metrics"] =    meta
                     
                 # Append episode's reward to list.
-                results["episodes"].update({
-                                        episode:    {
-                                            "steps_taken":  step,
-                                            "reward":       total_reward
-                                        }
-                                    })
-                
-                # Administer exploration rate (epsilon) decay.
-                self.decay_epsilon()
+                game_results["episodes"].update({episode: episode_results})
                 
                 # Update progress bar.
                 progress_bar.update(1)
             
         # Return results to parent process.
-        return results
+        return game_results
     
     def update(self,
         state:      int,
