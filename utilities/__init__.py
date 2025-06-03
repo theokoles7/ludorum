@@ -1,8 +1,7 @@
 """Utilities package."""
 
-__all__ = ["ARGS", "BANNER", "LOGGER", "TIMESTAMP"]
+__all__ = ["BANNER", "get_child", "get_logger", "TIMESTAMP"]
 
-from utilities.arguments    import ARGS
 from utilities.banner       import BANNER
-from utilities.logger       import LOGGER
+from utilities.logger       import get_child, get_logger
 from utilities.timestamp    import TIMESTAMP

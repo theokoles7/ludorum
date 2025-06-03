@@ -40,10 +40,10 @@ def load_environment(
     """
     from logging            import Logger
     
-    from utilities          import LOGGER
+    from utilities          import get_child
     
     # Initialize logger.
-    __logger__: Logger =    LOGGER.getChild("environment-loader")
+    __logger__: Logger =    get_child("environment-loader")
     
     # Log action for debugging.
     __logger__.debug(f"Loading environment: {environment} ({kwargs})")

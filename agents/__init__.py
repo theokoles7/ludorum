@@ -7,19 +7,24 @@ value-based, policy-based, and model-based methods. Each type has its own streng
 and the choice of agent depends on the specific requirements of the task and environment.
 """
 
-__all__ =   [
-                # Agent Loader.
-                "load_agent",
-                
-                # Abstract Agent.
-                "Agent",
-                
-                # Value-Based Agents.
-                "QLearning"
-            ]
+__all__ =                   [
+                                # Agent parser registration.
+                                "register_agent_parsers",
+                                
+                                # Agent Loader.
+                                "load_agent",
+                                
+                                # Abstract Agent.
+                                "Agent",
+                                
+                                # Value-Based Agents.
+                                "QLearning"
+                            ]
 
+from agents.__args__        import register_agent_parsers
 from agents.__base__        import Agent
 
+from agents.nlm             import *
 from agents.q_learning      import QLearning
 
 
@@ -45,10 +50,10 @@ def load_agent(
     """
     from logging            import Logger
     
-    from utilities          import LOGGER
+    from utilities          import get_child
     
     # Initialize logger.
-    __logger__: Logger =    LOGGER.getChild("agent-loader")
+    __logger__: Logger =    get_child("agent-loader")
     
     # Log action for debugging.
     __logger__.debug(f"Loading agent: {agent} ({kwargs})")

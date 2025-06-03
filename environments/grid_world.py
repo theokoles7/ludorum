@@ -9,7 +9,7 @@ from time                   import sleep
 from termcolor              import colored
 
 from environments.__base__  import Environment
-from utilities              import LOGGER, TIMESTAMP
+from utilities.logger       import get_logger
 
 class GridWorld(Environment):
     """# Grid World.
@@ -108,7 +108,10 @@ class GridWorld(Environment):
         super(GridWorld, self).__init__()
         
         # Initialize logger.
-        self.__logger__:        Logger =                        LOGGER.getChild("grid-world")
+        self.__logger__:        Logger =                        get_logger(
+                                                                    logger_name =   "grid-world",
+                                                                    
+        )
         
         # Ensure state dimensions are greater than zero.
         assert 0 < rows <=10,                   f"Row dimension must be integer value 1-10, got {rows}"
