@@ -1,30 +1,42 @@
 """Drive application."""
 
-from json       import dumps
+from argparse   import Namespace
+from logging    import Logger
 
+from __args__   import parse_ludorum_arguments
+from agents     import nlm
 from commands   import *
-from utilities  import ARGS, BANNER, LOGGER
+from utilities  import BANNER, get_logger
 
 if __name__ == "__main__":
     """Execute command."""
     
+    # Parse Ludorum arguments.
+    _arguments_:    Namespace =             parse_ludorum_arguments()
+    
+    # Initialize logger.
+    _logger_:       Logger =                get_logger(
+                                                logger_name =   "ludorum",
+                                                logging_level = _arguments_.logging_level,
+                                                logging_path =  _arguments_.logging_path
+                                            )
+    
+    # Define mapping of commands to their respective entry points.
+    _commands_:     dict[str, callable] =   {
+                                                "nlm":  nlm.main
+                                            }
+    
     try:# Log banner
-        LOGGER.info(BANNER)
+        _logger_.info(BANNER)
         
-        # Match command
-        match ARGS.command:
-            
-            # Play a game with an agent.
-            case "play":    LOGGER.info(dumps(obj = play_game(**vars(ARGS)), indent = 2, default = str))
-            
-            # Render an environment visualization.
-            case "render":  render_environment(**vars(ARGS))
-            
-            # Invalid command
-            case _:         LOGGER.error(f"Invalid command provided: {ARGS.command}")
+        # Execute command provided.
+        _commands_[_arguments_.command](_arguments_)
     
     # Catch wildcard errors
-    except Exception as e:  LOGGER.critical(f"Unexpected error caught in main process: {e}", exc_info = True)
+    except Exception as e:  _logger_.critical(
+                                f"Unexpected error caught: {e}",
+                                exc_info = (_arguments_.logging_level == "DEBUG")
+                            )
     
     # Exit gracefully
-    finally:                LOGGER.info("Exiting...")
+    finally:                _logger_.info("Exiting...")

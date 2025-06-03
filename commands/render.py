@@ -3,7 +3,7 @@
 from logging        import Logger
 
 from environments   import *
-from utilities      import LOGGER
+from utilities      import get_child
 
 def render_environment(
     environment:    str,
@@ -15,7 +15,7 @@ def render_environment(
         * environment   (str):  Environment being rendered.
     """
     # Initialize logger.
-    __logger__: Logger =    LOGGER.getChild("render")
+    __logger__: Logger =    get_child("render")
     
     # Match environment being rendered.
     match environment:

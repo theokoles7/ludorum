@@ -1,36 +1,84 @@
-"""Logging utilities."""
+"""# ludorum.utilities.logger
 
-__all__ = ["LOGGER"]
+Logging utilities."""
+
+__all__ = ["get_logger"]
 
 from logging                import getLogger, Formatter, Logger, StreamHandler
 from logging.handlers       import RotatingFileHandler
 from os                     import makedirs
-from os.path                import dirname
 from sys                    import stdout
 
-from utilities.arguments    import ARGS
+# Declare logger object.
+LOGGER: Logger
 
-# Match command being executed
-match ARGS.command:
+def get_logger(
+    logger_name:    str,
+    logging_level:  str =   "INFO",
+    logging_path:   str =   "logs"
+) -> Logger:
+    """# Initialize Logger.
     
-    # No command being executed.
-    case _: _log_path_: str =   f"{ARGS.logging_path}/default.log"
+    Initialize a logger object with configuration provided.
 
-# Ensure that logging path exists
-makedirs(name = dirname(p = _log_path_), exist_ok = True)
+    ## Args:
+        * logger_name   (str):              Name attributed to logger object. This should usually 
+                                            be the module identifier.
+        * logging_level (str, optional):    Minimum logging level (DEBUG < INFO < WARNING < ERROR < 
+                                            CRITICAL). Defaults to "INFO".
+        * logging_path  (str, optional):    Path at which logs will be written. Defaults to "logs".
 
-# Initialize logger
-LOGGER:         Logger =                getLogger("ludorum")
+    ## Returns:
+        * Logger:   Logger object, initialized with provided parameters.
+    """
+    # Ensure that logging path exists
+    makedirs(name = logging_path, exist_ok = True)
 
-# Set logging level
-LOGGER.setLevel(ARGS.logging_level)
+    # Initialize logger
+    LOGGER:         Logger =                getLogger(
+                                                name =          logger_name
+                                            )
 
-# Define console handler
-stdout_handler: StreamHandler =         StreamHandler(stream = stdout)
-stdout_handler.setFormatter(Formatter("%(levelname)s | %(name)s | %(message)s"))
-LOGGER.addHandler(hdlr = stdout_handler)
+    # Define console handler
+    stdout_handler: StreamHandler =         StreamHandler(
+                                                stream =        stdout
+                                            )
 
-# Define file handler
-file_handler:   RotatingFileHandler =   RotatingFileHandler(filename = _log_path_, maxBytes = 1048576, backupCount = 3)
-file_handler.setFormatter(Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s"))
-LOGGER.addHandler(hdlr = file_handler)
+    # Define file handler
+    file_handler:   RotatingFileHandler =   RotatingFileHandler(
+                                                filename =      f"{logging_path}/{logger_name}.log",
+                                                maxBytes =      1048576,
+                                                backupCount =   3
+                                            )
+    
+    # Define format for console handler.
+    stdout_handler.setFormatter(Formatter("%(levelname)s | %(name)s | %(message)s"))
+    
+    # Define format fror file handler.
+    file_handler.setFormatter(Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s"))
+
+    # Set logging level
+    LOGGER.setLevel(level = logging_level)
+    
+    # Add handlers to logger.
+    LOGGER.addHandler(hdlr = stdout_handler)
+    LOGGER.addHandler(hdlr = file_handler)
+    
+    # Return logger object.
+    return LOGGER
+    
+def get_child(
+    logger_name:    str
+) -> Logger:
+    """# Initialize Child Logger.
+    
+    Declares a logger child descendent of root logger.
+
+    ## Args:
+        * logger_name   (str):  Name attributed to child logger.
+
+    ## Returns:
+        * Logger:   Child logger.
+    """
+    # Simply return child logger.
+    return LOGGER.getChild(suffix = logger_name)

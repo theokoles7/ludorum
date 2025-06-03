@@ -8,13 +8,13 @@ __all__ = ["QLearning"]
 
 from logging                import Logger
 
-from numpy                  import argmax, float32, full, loadtxt, max, ndarray, savetxt, zeros
+from numpy                  import argmax, full, loadtxt, max, ndarray, savetxt, zeros
 from numpy.random           import normal, rand, randint, uniform
 from tqdm                   import tqdm
 
 from agents.__base__        import Agent
 from environments.__base__  import Environment
-from utilities              import LOGGER
+from utilities              import get_child
 
 class QLearning(Agent):
     """# Q-Learning Agent.
@@ -119,7 +119,7 @@ class QLearning(Agent):
                                                                     on the actual rewards received.
         """
         # Declare logger.
-        self.__logger__:            Logger =        LOGGER.getChild("q-learning")
+        self.__logger__:            Logger =        get_child("q-learning")
         
         # Define environment components.
         self._state_space_:         int =           state_space
