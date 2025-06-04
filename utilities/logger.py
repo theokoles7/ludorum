@@ -1,8 +1,9 @@
 """# ludorum.utilities.logger
 
-Logging utilities."""
+Logging utilities.
+"""
 
-__all__ = ["get_logger"]
+__all__ = ["LOGGER", "get_logger"]
 
 from logging                import getLogger, Formatter, Logger, StreamHandler
 from logging.handlers       import RotatingFileHandler
@@ -10,7 +11,7 @@ from os                     import makedirs
 from sys                    import stdout
 
 # Declare logger object.
-LOGGER: Logger
+LOGGER:         Logger
 
 def get_logger(
     logger_name:    str,
@@ -33,11 +34,17 @@ def get_logger(
     """
     # Ensure that logging path exists
     makedirs(name = logging_path, exist_ok = True)
+    
+    # Declare globals.
+    global LOGGER
 
     # Initialize logger
-    LOGGER:         Logger =                getLogger(
+    LOGGER =                                getLogger(
                                                 name =          logger_name
                                             )
+
+    # Set logging level
+    LOGGER.setLevel(level = logging_level)
 
     # Define console handler
     stdout_handler: StreamHandler =         StreamHandler(
@@ -48,7 +55,7 @@ def get_logger(
     file_handler:   RotatingFileHandler =   RotatingFileHandler(
                                                 filename =      f"{logging_path}/{logger_name}.log",
                                                 maxBytes =      1048576,
-                                                backupCount =   3
+                                                backupCount =   10
                                             )
     
     # Define format for console handler.
@@ -56,9 +63,6 @@ def get_logger(
     
     # Define format fror file handler.
     file_handler.setFormatter(Formatter("%(asctime)s | %(levelname)s | %(name)s | %(message)s"))
-
-    # Set logging level
-    LOGGER.setLevel(level = logging_level)
     
     # Add handlers to logger.
     LOGGER.addHandler(hdlr = stdout_handler)
@@ -80,5 +84,8 @@ def get_child(
     ## Returns:
         * Logger:   Child logger.
     """
+    # Declare globals.
+    global LOGGER
+    
     # Simply return child logger.
-    return LOGGER.getChild(suffix = logger_name)
+    return LOGGER.getChild(logger_name)

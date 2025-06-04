@@ -1,11 +1,9 @@
-"""# ludorum.agents.__args__
+"""# ludorum.agents.args
 
 This module handles the registration of agent parsers defined in sub-packages.
 """
 
 from argparse   import _SubParsersAction
-
-from agents.nlm import register_nlm_parser
 
 def register_agent_parsers(
     parent_subparser:   _SubParsersAction
@@ -15,5 +13,10 @@ def register_agent_parsers(
     ## Args:
         * parent_subparser  (_SubParsersAction): Parent's sub-parsers object.
     """
+    # Deferred agent parser imports.
+    from agents.nlm         import register_nlm_parser
+    from agents.q_learning  import register_q_learning_parser
+
     # Register agent parsers.
-    register_nlm_parser(parent_subparser =  parent_subparser)
+    register_nlm_parser(parent_subparser =          parent_subparser)
+    register_q_learning_parser(parent_subparser =   parent_subparser)

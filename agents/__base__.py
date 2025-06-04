@@ -1,4 +1,4 @@
-"""# ludorum.agents.__base__
+"""# ludorum.agents.Agent
 
 Base implementation and structure of a reinforcement learning agent.
 """

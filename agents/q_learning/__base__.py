@@ -10,10 +10,8 @@ from logging                import Logger
 
 from numpy                  import argmax, full, loadtxt, max, ndarray, savetxt, zeros
 from numpy.random           import normal, rand, randint, uniform
-from tqdm                   import tqdm
 
 from agents.__base__        import Agent
-from environments.__base__  import Environment
 from utilities              import get_child
 
 class QLearning(Agent):
@@ -180,7 +178,7 @@ class QLearning(Agent):
             * ndarray:  Array of `states` x `actions` dimensions, initialized using method specified.
         """
         # Log action for debugging.
-        self.__logger__.debug(f"Initialize {states}x{actions} Q-Table using {method} method.")
+        self.__logger__.debug(f"Initializing {states}x{actions} Q-Table using {method} method.")
         
         # Match method.
         match method:
@@ -267,129 +265,7 @@ class QLearning(Agent):
         if rand() < self._exploration_rate_: return randint(low = 0, high = self._action_space_)
         
         # Otherwise, choose max-value action from Q-table based on current state.
-        return argmax(self._q_table_[state]).item()      
-        
-    def _train_(self,
-        environment:    Environment,
-        episodes:       int =   100,
-        max_steps:      int =   100,
-        **kwargs
-    ) -> dict[str, list]:
-        """# Train agent on given environment.
-
-        ## Args:
-            * environment   (Environment):      Environment in which to train the agent.
-            * episodes      (int, optional):    Prescribed training episodes. Defaults to 100.
-            * max_steps     (int, optional):    Maximum number of steps an agent can make within a 
-                                                single episode. Defaults to 100.
-
-        ## Returns:
-            * dict:
-                * rewards   (list): Rewards accrued during interaction with the environment.
-        """
-        # Log environment for debugging.
-        self.__logger__.debug(f"Environment prompt:\n{environment}")
-        
-        # Initialize holistic game report.
-        game_results:   dict =  {
-                                "episodes": {},
-                                "results":  {
-                                                "max_reward":   -999,
-                                                "steps_taken":  0,
-                                                "episode":      0
-                                            }
-                            }
-        
-        # Initialize progress bar.
-        with tqdm(
-            total =     episodes,
-            desc =      f"{self.__class__.__name__} training on {episodes} episodes",
-            leave =     False,
-            colour =    "magenta"
-        ) as progress_bar:
-            
-            # For each episode prescribed...
-            for episode in range(1, episodes + 1):
-        
-                # Initialize episodic report.
-                episode_results:   dict =  {
-                                        "steps":        {},
-                                        "steps_taken":  0,
-                                        "score":        0,
-                                        "metrics":      {}
-                                    }
-                
-                # Update progress bar status.
-                progress_bar.set_postfix(text = f"Episode {episode}/{episodes}")
-                
-                # Reset environment.
-                state:          ndarray =   environment.reset()
-                
-                # Reset reward.
-                total_reward:   float =     0.0
-                
-                # For each possible step the agent can make...
-                for step in range(1, max_steps + 1):
-                    
-                    # Choose an action for current state.
-                    action: int =   self.select_action(state = state)
-                    
-                    # Execute action.
-                    next_state, reward, done, meta =   environment.step(action)
-                    
-                    # Update Q-Table.
-                    self.update(
-                        state =         state, 
-                        action =        action, 
-                        reward =        reward, 
-                        next_state =    next_state, 
-                        done =          done
-                    )
-                    
-                    # Update total reward.
-                    total_reward += reward
-        
-                    # Append step data.
-                    episode_results["steps"].update({step: {
-                                                    "action":           action,
-                                                    "reward":           reward,
-                                                    "done":             done,
-                                                    "previous_state":   state,
-                                                    "current_state":    next_state,
-                                                    "metrics":          meta
-                                                }})
-                    
-                    # Update current state.
-                    state =         next_state
-                    
-                    # Update episode's step counter.
-                    episode_results["steps_taken"] += 1
-                    
-                    # Break from episode if agent has reached end state.
-                    if done: break
-                
-                    # Administer exploration rate (epsilon) decay.
-                    self.decay_epsilon()
-                    
-                # Update running maximum results if new record is achieved.
-                if total_reward > game_results["results"]["max_reward"]:    game_results["results"].update({
-                                                                                "max_reward":   total_reward,
-                                                                                "steps_taken":  step,
-                                                                                "episode":      episode
-                                                                            })
-                
-                # Update episodic results.
-                episode_results["score"] =      total_reward
-                episode_results["metrics"] =    meta
-                    
-                # Append episode's reward to list.
-                game_results["episodes"].update({episode: episode_results})
-                
-                # Update progress bar.
-                progress_bar.update(1)
-            
-        # Return results to parent process.
-        return game_results
+        return argmax(self._q_table_[state]).item()  
     
     def update(self,
         state:      int,
@@ -421,10 +297,10 @@ class QLearning(Agent):
             * next_state    (tuple[int]):   State of the agent after action is taken. 
             * done          (bool):         Indicates if agent has reached end state.
         """
-        # Log for debugging
+        # Log for debugging.
         self.__logger__.debug(f"Updating Q-table[state: {state}, action: {action}, reward: {reward}]")
         
-        # Define new action-state value in Q-table
+        # Define new action-state value in Q-table.
         self._q_table_[state, action] +=    (
                                                 self._learning_rate_ * (
                                                     reward + (

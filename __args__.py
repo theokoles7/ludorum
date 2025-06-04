@@ -5,6 +5,7 @@ __all__ = ["parse_ludorum_arguments"]
 from argparse   import ArgumentParser, _ArgumentGroup, Namespace, _SubParsersAction
 
 from agents     import register_agent_parsers
+from commands   import register_command_parsers
 
 
 def parse_ludorum_arguments() -> Namespace:
@@ -61,7 +62,8 @@ def parse_ludorum_arguments() -> Namespace:
     # +============================================================================================+
 
     # Register command parsers.
-    register_agent_parsers(parent_subparser = _subparser_)
+    register_agent_parsers(parent_subparser =   _subparser_)
+    register_command_parsers(parent_subparser = _subparser_)
 
     # Parse arguments
     return _parser_.parse_args()

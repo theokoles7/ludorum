@@ -1,10 +1,13 @@
+[ludorum](../README.md) / documentation
+
 # Ludorum Documentation
-[README](../README.md) / documentation
 
-## [Agents](./agents/README.md)
+## [Agents](../agents/README.md)
 
-## [Commands](./commands/README.md)
+* [Neural Logic Machine](../agents/nlm/README.md)
 
-* [`render`](./commands/render.md)
+* [Q-Learning](../agents/q_learning/README.md)
 
-## [Environments](./environments/README.md)
+## [Environments](../environments/README.md)
+
+* [Grid World](../environments/README.md)

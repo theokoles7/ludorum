@@ -1,6 +1,16 @@
 """Commands package."""
 
-__all__ = ["play_game", "render_environment"]
+__all__ =   [
+                # Argument registration.
+                "register_command_parsers",
+                
+                # Command modules.
+                "render"
+            ]
 
-from commands.play      import play_game
-from commands.render    import render_environment
+from commands.__args__  import  register_command_parsers
+
+# Command modules.
+from commands           import  (
+                                    render
+                                )

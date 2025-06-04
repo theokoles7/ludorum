@@ -7,7 +7,7 @@ __all__ =   [
                 # Agent class.
                 "NeuralLogicMachine",
                 
-                # Agent components.
+                # Agent layers.
                 "DimensionExpander",
                 "DimensionPermutation",
                 "DimensionReducer",
@@ -22,19 +22,14 @@ __all__ =   [
                 "register_nlm_parser"
             ]
 
-# Agent class.
-from agents.nlm.__base__            import NeuralLogicMachine
-
-# Agent layer components.
-from agents.nlm.layers.expander     import DimensionExpander
-from agents.nlm.layers.permutation  import DimensionPermutation
-from agents.nlm.layers.reducer      import DimensionReducer
-from agents.nlm.layers.linear       import LinearLayer
-from agents.nlm.layers.logic        import LogicLayer
-from agents.nlm.layers.mlp          import MLPLayer
-
 # Parser registration.
-from agents.nlm.__args__            import register_nlm_parser
+from agents.nlm.__args__    import register_nlm_parser
+
+# Agent class.
+from agents.nlm.__base__    import NeuralLogicMachine
 
 # Main process.
-from agents.nlm.__main__            import main
+from agents.nlm.__main__    import main
+
+# Agent layer components.
+from agents.nlm.layers      import *

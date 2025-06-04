@@ -1,4 +1,7 @@
-"""# ludorum.agents.nlm.args"""
+"""# ludorum.agents.nlm.args
+
+Argument definitions and parsing for Neural Logic Machine agent.
+"""
 
 __all__ = ["register_nlm_parser"]
 
@@ -7,7 +10,7 @@ from argparse   import _ArgumentGroup, ArgumentParser, _SubParsersAction
 def register_nlm_parser(
     parent_subparser:   _SubParsersAction
 ) -> None:
-    """# Add Neural Logic Machine Argument Parser.
+    """# Register Neural Logic Machine Argument Parser.
     
     Add NLM agent sub-parser & arguments to parent's sub-parser.
 

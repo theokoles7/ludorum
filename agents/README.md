@@ -1,5 +1,6 @@
-[ludorum](../README.md) / agents
+[ludorum](../README.md) / [documentation](../documentation/README.md) / agents
 
-# Agents Documentation
+# Ludorum Agent Index
 
 * [Neural Logic Machine](./nlm/README.md)
+* [Q-Learning](./q_learning/README.md)
