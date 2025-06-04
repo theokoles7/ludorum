@@ -1,21 +1,24 @@
-"""Argument definitions and parsing for playing a game."""
+"""# ludorum.agents.q_learning.actions.play.args
 
-from argparse                                   import ArgumentParser, _SubParsersAction
+Define arguments parser and definitions for `q-learning play` command.
+"""
 
-from utilities.arguments.environment_parsers    import *
+from argparse                           import ArgumentParser, _SubParsersAction
 
-def add_play_parser(
+from environments.grid_world.__args__   import register_grid_world_parser
+
+def register_play_parser(
     parent_subparser:   _SubParsersAction
 ) -> None:
-    """# Add play command arguments to parent's subparser.
+    """# Register Play Parser.
 
     ## Args:
         * parent_subparser  (_SubParsersAction):    Parent's subparser object.
     """
-    # Initialize Grid World game parser
+    # Initialize parser.
     _parser_:       ArgumentParser =    parent_subparser.add_parser(
         name =      "play",
-        help =      """Execute an agent's episodic game play on an environment."""
+        help =      """Play a game with agent."""
     )
     
     _subparser_:    _SubParsersAction = _parser_.add_subparsers(
@@ -31,7 +34,7 @@ def add_play_parser(
         "--episodes",
         type =      int,
         default =   100,
-        help =      """Episodes for which game play will repeat."""
+        help =      """Episodes for which game play will repeat. Defaults to 100."""
     )
     
     _parser_.add_argument(
@@ -39,12 +42,20 @@ def add_play_parser(
         type =      int,
         default =   100,
         help =      """Maximum number of interactions that the agent will be allowed to make with 
-                    the environment during each episode."""
+                    the environment during each episode. Defaults to 100."""
+    )
+    
+    _parser_.add_argument(
+        "--animate",
+        dest =      "animate",
+        action =    "store_true",
+        default =   False,
+        help =      """Render animation of agent interacting with environment."""
     )
 
     # +============================================================================================+
     # | END ARGUMENTS                                                                              |
     # +============================================================================================+
     
-    # Add environment parsers.
-    add_grid_world_parser(parent_subparser =    _subparser_)
+    # Register environment parsers.
+    register_grid_world_parser(parent_subparser =   _subparser_)

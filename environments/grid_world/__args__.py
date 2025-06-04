@@ -1,16 +1,14 @@
 """Argument definitions and parsing for Grid World environment."""
 
-__all__ = ["add_grid_world_parser"]
+__all__ = ["register_grid_world_parser"]
 
-from argparse                           import _ArgumentGroup, ArgumentParser, _SubParsersAction
-from ast                                import literal_eval
+from argparse   import _ArgumentGroup, ArgumentParser, _SubParsersAction
+from ast        import literal_eval
 
-from utilities.arguments.agent_parsers  import *
-
-def add_grid_world_parser(
+def register_grid_world_parser(
     parent_subparser:   _SubParsersAction
 ) -> None:
-    """# Add Grid World game arguments to parent's subparser.
+    """# Register Grid World Parser.
 
     ## Args:
         * parent_subparser  (_SubParsersAction):    Parent's subparser object.
@@ -23,11 +21,6 @@ def add_grid_world_parser(
                         navigates the grid to achieve a goal. The environment consists of a grid 
                         with rows and columns, where each grid cell can have different attributes, 
                         such as obstacles, rewards, or special features."""
-    )
-    
-    _subparser_:    _SubParsersAction = _parser_.add_subparsers(
-        dest =      "agent",
-        help =      """Agent playing game."""
     )
 
     # +============================================================================================+
@@ -159,24 +152,10 @@ def add_grid_world_parser(
         help =      """Reward received in the case that the agent lands on a coin square. Defaults 
                     to +0.5."""
     )
-    
-    # ANIMATION ====================================================================================
-    _animation_:    _ArgumentGroup =    _parser_.add_argument_group("Animation")
-    
-    _animation_.add_argument(
-        "--render",
-        dest =      "render",
-        action =    "store_true",
-        default =   False,
-        help =      """Animate environment while agent is interacting with it."""
-    )
 
     # +============================================================================================+
     # | END ARGUMENTS                                                                              |
     # +============================================================================================+
-    
-    # Add agent parsers.
-    add_q_learning_parser(parent_subparser =    _subparser_)
     
 # Define function for parsing list of tuples.
 def list_of_tuples(

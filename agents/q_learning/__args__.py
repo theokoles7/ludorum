@@ -1,13 +1,18 @@
-"""Argument definitions and parsing for Q-Learning agent."""
+"""# ludorum.agents.q_learning.args
 
-__all__ = ["add_q_learning_parser"]
+Argument definitions and parsing for Q-Learning agent.
+"""
+
+__all__ = ["register_q_learning_parser"]
 
 from argparse   import _ArgumentGroup, ArgumentParser, _SubParsersAction
 
-def add_q_learning_parser(
+def register_q_learning_parser(
     parent_subparser:   _SubParsersAction
 ) -> None:
-    """# Add Q-Learning agent sub-parser & arguments to parent's sub-parser.
+    """# Register Q-Learning Argument Parser.
+    
+    Add Q-Learning agent sub-parser & arguments to parent's sub-parser.
 
     ## Args:
         * parent_subparser  (_SubParsersAction):    Parent's sub-parser object.
@@ -19,6 +24,11 @@ def add_q_learning_parser(
         description =   """Q-Learning is an off-policy, tabular-based, value-based algorithm.""",
         epilog =        """Implementation based on "Q-Learning" by Watkins & Dayan (1992). Link to 
                         paper: https://link.springer.com/content/pdf/10.1007/BF00992698.pdf"""
+    )
+    
+    _subparser_:    _SubParsersAction = _parser_.add_subparsers(
+        dest =          "action",
+        help =          """Action that agent will execute."""
     )
 
     # +============================================================================================+
@@ -123,3 +133,9 @@ def add_q_learning_parser(
     # +============================================================================================+
     # | END ARGUMENTS                                                                              |
     # +============================================================================================+
+    
+    # Deferred agent action parser registration imports.
+    from agents.q_learning.actions.__args__ import register_action_parsers
+    
+    # Register action parsers.
+    register_action_parsers(parent_subparser =  _subparser_)

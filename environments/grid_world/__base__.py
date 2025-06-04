@@ -9,7 +9,7 @@ from time                   import sleep
 from termcolor              import colored
 
 from environments.__base__  import Environment
-from utilities.logger       import get_logger
+from utilities.logger       import get_child
 
 class GridWorld(Environment):
     """# Grid World.
@@ -39,8 +39,6 @@ class GridWorld(Environment):
         wall_penalty:   float =                         -0.1,
         loss_penalty:   float =                         -0.5,
         coin_reward:    float =                         0.5,
-        # Animation
-        render:         bool =                          False,
         **kwargs
     ):
         """# Initialize Grid-World game environment.
@@ -108,10 +106,10 @@ class GridWorld(Environment):
         super(GridWorld, self).__init__()
         
         # Initialize logger.
-        self.__logger__:        Logger =                        get_logger(
+        self.__logger__:        Logger =                        get_child(
                                                                     logger_name =   "grid-world",
                                                                     
-        )
+                                                                )
         
         # Ensure state dimensions are greater than zero.
         assert 0 < rows <=10,                   f"Row dimension must be integer value 1-10, got {rows}"
@@ -220,9 +218,6 @@ class GridWorld(Environment):
                                                                             "symbol":   "→"
                                                                         }
                                                                 }
-        
-        # Define animation preference.
-        self._render_:          bool =                          render
         
         # Initialize interaction metrics.
         self.reset()
@@ -562,10 +557,6 @@ class GridWorld(Environment):
 
         # Log for debugging
         self.__logger__.debug(f"Step taken (new agent position: {self._agent_position_}, reward: {1 if self.state() == self._goal_ else -0.1}, done: {tuple(self._agent_position_) == self._goal_})")
-        self.__logger__.debug(f"Current state of environment:\n{self.__str__()}")
-        
-        # If logging level is not DEBUG and rendering was requested, render environment.
-        if self.__logger__.level != 10 and self._render_: self.render()
                 
         # Update cumulative reward.
         self._cumulative_reward_ += self._goal_reward_ if self.state() == self._goal_ else self._step_penalty_

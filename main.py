@@ -4,7 +4,7 @@ from argparse   import Namespace
 from logging    import Logger
 
 from __args__   import parse_ludorum_arguments
-from agents     import nlm
+from agents     import *
 from commands   import *
 from utilities  import BANNER, get_logger
 
@@ -23,14 +23,16 @@ if __name__ == "__main__":
     
     # Define mapping of commands to their respective entry points.
     _commands_:     dict[str, callable] =   {
-                                                "nlm":  nlm.main
+                                                "nlm":          nlm.main,
+                                                "q-learning":   q_learning.main,
+                                                "render":       render.main
                                             }
     
     try:# Log banner
         _logger_.info(BANNER)
         
         # Execute command provided.
-        _commands_[_arguments_.command](_arguments_)
+        _commands_[_arguments_.command](**vars(_arguments_))
     
     # Catch wildcard errors
     except Exception as e:  _logger_.critical(

@@ -8,51 +8,29 @@ etc. Each category has its own unique features for which testing an agent may be
 """
 
 __all__ =   [
-                # Environment Loader.
-                "load_environment",
-    
+                # Environment parser registration.
+                "register_environment_parsers",
+                
                 # Abstract Environment.
                 "Environment",
                 
-                # Discrete, Single Player.
-                "GridWorld"
+                # Environment classes.
+                "GridWorld",
+                
+                # Environment modules.
+                "grid_world"
             ]
 
-from environments.__base__      import Environment
+# Argument registration.
+from environments.__args__      import  register_environment_parsers
 
-from environments.grid_world    import GridWorld
+# Abstract environment class.
+from environments.__base__      import  Environment
 
-# Define environment loader function.
-def load_environment(
-    environment:    str,
-    **kwargs
-) -> Environment:
-    """# Load Environment
-    
-    Initialize and provide environment based on selection and parameters.
+# Environment classes.
+from environments.grid_world    import  GridWorld
 
-    ## Args:
-        * environment   (str):  Environment selection. For a full list of options, refer to 
-                                ludorum.environments package or documentation.
-
-    ## Returns:
-        * Environment:  Initialized environment, based on selection and keyword arguments.
-    """
-    from logging            import Logger
-    
-    from utilities          import get_child
-    
-    # Initialize logger.
-    __logger__: Logger =    get_child("environment-loader")
-    
-    # Log action for debugging.
-    __logger__.debug(f"Loading environment: {environment} ({kwargs})")
-    
-    # Match environment selection.
-    match environment:
-        
-        # Grid World
-        case "grid-world":  return GridWorld(**kwargs)
-        
-        # Invalid environment selection.
-        case _:             raise ValueError(f"Invalid environment selected: {environment}")
+# Environment modules.
+from environments               import  (
+                                            grid_world
+                                        )
