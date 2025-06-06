@@ -134,6 +134,9 @@ class QLearning(Agent):
         self._exploration_decay_:   float =         exploration_decay
         self._exploration_min_:     float =         exploration_min
         
+        # Define bootstrap method.
+        self._bootstrap_:           str =           bootstrap
+        
         # Initialize Q-Table.
         self._q_table_:             ndarray =       self.bootstrap_q_table(
                                                         states =    self._state_space_,
@@ -230,7 +233,39 @@ class QLearning(Agent):
         self.__logging__.debug(f"Loading q-table from {path}")
         
         # Save Q-table to file.
-        self._q_table_: ndarray =   loadtxt(fname = path)  
+        self._q_table_: ndarray =   loadtxt(fname = path)
+        
+    def save_config(self,
+        path:   str
+    ) -> None:
+        """# Save Model Configuration.
+
+        ## Args:
+            * path  (str):  Path at which agent confriguration file will be saved.
+        """
+        from json   import dump
+        from os     import makedirs
+        
+        # Ensure that path exists.
+        makedirs(name = path, exist_ok = True)
+        
+        # Save configuratino to JSON file.
+        dump(
+            obj =       {
+                            "learning_rate":        self._learning_rate_,
+                            "discount_rate":        self._discount_rate_,
+                            "exploration_rate":     self._exploration_rate_,
+                            "exploration_decay":    self._exploration_decay_,
+                            "exploration_min":      self._exploration_min_,
+                            "bootstrap":            self._bootstrap_
+                        },
+            fp =        open(f"{path}/q_learning_config.json", "w"),
+            indent =    2,
+            default =   str
+        )
+        
+        # Log save location.
+        self.__logger__.info(f"Q-Learning configuration saved to {path}/q_learning_config.json")
         
     def save_model(self,
         path:   str

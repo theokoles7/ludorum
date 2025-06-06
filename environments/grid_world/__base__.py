@@ -376,14 +376,43 @@ class GridWorld(Environment):
         return self.state()
     
     def save_config(self,
-        path:   str =   "configuration/environments/grid-world"
+        path:   str
     ) -> None:
         """# Save Environment Configuration.
 
         ## Args:
-            * path  (str, optional):    Path at which environment configuration file will be saved. 
-                                        Defaults to "configuration/environments/grid-world/TIMESTAMP.json".
+            * path  (str):  Path at which environment configuration file will be saved.
         """
+        from json   import dump
+        from os     import makedirs
+        
+        # Ensure that path exists.
+        makedirs(name = path, exist_ok = True)
+        
+        # Save configuratino to JSON file.
+        dump(
+            obj =       {
+                            "rows":         self._rows_,
+                            "columns":      self._columns_,
+                            "start":        self._start_,
+                            "loss":         self._loss_,
+                            "walls":        self._walls_,
+                            "coins":        self._coins_,
+                            "portals":      self._portals_,
+                            "wrap_map":     self._wrap_map_,
+                            "goal_reward":  self._goal_reward_,
+                            "step_penalty": self._step_penalty_,
+                            "wall_penalty": self._wall_penalty_,
+                            "loss_penalty": self._loss_penalty_,
+                            "coin_reward":  self._coin_reward_
+                        },
+            fp =        open(f"{path}/grid_world_config.json", "w"),
+            indent =    2,
+            default =   str
+        )
+        
+        # Log save location.
+        self.__logger__.info(f"Grid World configuration saved to {path}/grid_world_config.json")
     
     def state(self) -> int:
         """# Provide the agent's current position in the puzzle.
