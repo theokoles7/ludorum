@@ -3,6 +3,8 @@
 Defines the abstract class representation for action and observation spaces.
 """
 
+__all__ = ["Space"]
+
 from abc    import ABC, abstractmethod
 from typing import Any
 

@@ -3,6 +3,8 @@
 Defines a continuous space for real-valued scalar actions or observations.
 """
 
+__all__ = ["Continuous"]
+
 from math               import inf
 from random             import uniform
 from typing             import Tuple, Union

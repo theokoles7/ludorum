@@ -3,9 +3,11 @@
 Grid World game implementation.
 """
 
-from typing                 import Dict, List, Optional, Set, Tuple
+from typing                             import Any, Dict, List, override, Optional, Set, Tuple
 
-from environments.__base__  import Environment
+from environments.__base__              import Environment
+from environments.grid_world.actions    import GridWorldActions
+from environments.grid_world.components import Grid
 
 class GridWorld(Environment):
     """# Grid World
@@ -95,4 +97,85 @@ class GridWorld(Environment):
                                                                     that the agent takes during an 
                                                                     episode.
         """
+        # Initialize grid.
+        self._grid_:    Grid =              Grid(**locals())
         
+        # Define action space.
+        self._actions_: GridWorldActions =  GridWorldActions()
+        
+    # PROPERTIES ===================================================================================
+    
+    @override
+    @property
+    def action_space(self) -> int:
+        """# Action Space (int)
+
+        Number of possible actions within Grid World environment.
+        """
+        return len(self._actions_)
+    
+    @property
+    def grid(self) -> Grid:
+        """# (Grid World) Grid
+
+        Environment's grid component (2D matrix of Squares).
+        """
+        return self._grid_
+    
+    @override
+    @property
+    def state_space(self) -> int:
+        """# State Space (int)
+
+        Number of positions that agent can be in within grid.
+        """
+        return self.grid.rows * self.grid.columns
+    
+    # METHODS ======================================================================================
+    
+    @override
+    def reset(self) -> int:
+        """# Reset.
+        
+        Reset environment to initial state.
+
+        ## Returns:
+            * int:  Agent's initial state.
+        """
+        return self.grid.reset()
+    
+    @override
+    def step(self,
+        action: int
+    ) -> Tuple[float, int, bool, Dict[str, Any]]:
+        """# Step.
+        
+        Apply action to environment and return the result.
+        
+        ## Args:
+            * action    (Any):  Action to be taken in the environment.
+        
+        ## Returns:
+            * Tuple[Any, float, bool, Dict]:
+                - Any:      Next state of the environment
+                - float:    Reward received
+                - bool:     Done flag indicating if the episode has ended
+                - Dict:     Additional information
+        """
+        return self.grid.move(coordinate = self._actions_[action])
+    
+    # DUNDERS ======================================================================================
+    
+    def __repr__(self) -> str:
+        """# Object Representation.
+
+        Object representation of environment.
+        """
+        return f"<GridWorld(action_space = {self.action_space}, state_space = {self.state_space})>"
+    
+    def __str__(self) -> str:
+        """# String Representation.
+        
+        String rendering of grid.
+        """
+        return str(self.grid)

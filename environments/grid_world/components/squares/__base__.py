@@ -84,7 +84,7 @@ class Square():
     # METHODS ======================================================================================
     
     def interact(self) -> Tuple[float, Optional[Tuple[int, int]], bool, Dict[str, Any]]:
-        """# Interact
+        """# Interact.
 
         ## Returns:
             * Tuple[float, Tuple[int, int]]:
@@ -97,6 +97,13 @@ class Square():
         
         # Return value and location.
         return self.value, self.coordinate, self.is_terminal, {"event": "landed on empty square"}
+    
+    def reset(self) -> None:
+        """# Reset.
+
+        Reset square.
+        """
+        self._visitations_: int =   0
     
     # DUNDERS ======================================================================================
     

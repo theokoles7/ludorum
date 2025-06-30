@@ -336,10 +336,45 @@ class Grid():
         self._agent_:   Tuple[int, int] =   state if state is not None else self._agent_
             
         # Return result of action.
-        return value, self._agent_, done, metadata
+        return  value,                                                  \
+                self._coordinate_to_state_(coordinate = self._agent_),  \
+                done,                                                   \
+                metadata
             
+    def reset(self) -> int:
+        """# Reset.
+        
+        Reset grid to initial state.
+
+        ## Returns:
+            * int: Agent's starting location.
+        """
+        # For each row...
+        for row in self._grid_: 
+            
+            # Reset each square in row.
+            for square in row: square.reset()
+            
+        # Reset agent.
+        self._agent_:   Tuple[int, int] =   self._start_
+            
+        # Provide agent's starting location.
+        return self._coordinate_to_state_(coordinate = self._agent_)
     
     # HELPERS ======================================================================================
+    
+    def _coordinate_to_state_(self,
+        coordinate: Tuple[int, int]
+    ) -> int:
+        """# (Convert) Coordinate to State.
+
+        ## Args:
+            * coordinate    (Tuple[int, int]):  Coordinate being converted.
+
+        ## Returns:
+            * int:  State representation of coordinate.
+        """
+        return coordinate[0] * self.columns + coordinate[1]
     
     def _get_square_(self,
         coordinate: Tuple[int, int]

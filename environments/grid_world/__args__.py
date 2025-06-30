@@ -4,7 +4,7 @@ __all__ = ["register_grid_world_parser"]
 
 from argparse   import _ArgumentGroup, ArgumentParser, _SubParsersAction
 from ast        import literal_eval
-from typing     import Dict, List, Tuple
+from typing     import Dict, List, Set, Tuple
 
 def register_grid_world_parser(
     parent_subparser:   _SubParsersAction
@@ -50,9 +50,9 @@ def register_grid_world_parser(
     
     _features_.add_argument(
         "--goal",
-        type =      tuple,
+        type =      set_of_tuples,
         default =   None,
-        help =      """(row, column) coordinate at which goal square will be located. Defaults to 
+        help =      """Set of (row, column) coordinates at which goal square(s) will be located. Defaults to 
                     top-right corner of grid."""
     )
     
@@ -66,26 +66,26 @@ def register_grid_world_parser(
     
     _features_.add_argument(
         "--loss",
-        type =      list_of_tuples,
+        type =      set_of_tuples,
         default =   [],
-        help =      """List of (row, column) coordinate at which loss sqaures will be located. 
-                    Example: "[(1, 0), ...]"."""
+        help =      """Set of (row, column) coordinates at which loss sqaure(s) will be located. 
+                    Example: "{(1, 0), ...}"."""
     )
     
     _features_.add_argument(
         "--walls",
-        type =      list_of_tuples,
+        type =      set_of_tuples,
         default =   [],
-        help =      """List of (row, column) coordinates at which wall squares will be located. 
-                    Example: "[(1, 0), ...]"."""
+        help =      """Set of (row, column) coordinates at which wall square(s) will be located. 
+                    Example: "{(1, 0), ...}"."""
     )
     
     _features_.add_argument(
         "--coins",
-        type =      list_of_tuples,
+        type =      set_of_tuples,
         default =   [],
-        help =      """List of (row, column) coordinates at which coin squares will be located. 
-                    Example: "[(1, 0), ...]"."""
+        help =      """Set of (row, column) coordinates at which coin square(s) will be located. 
+                    Example: "{(1, 0), ...}"."""
     )
     
     _features_.add_argument(
@@ -158,19 +158,19 @@ def register_grid_world_parser(
     # | END ARGUMENTS                                                                              |
     # +============================================================================================+
     
-# Define function for parsing list of tuples.
-def list_of_tuples(
+# Define function for parsing set of tuples.
+def set_of_tuples(
     arg:    str
-) -> List[Tuple[int]]:
-    """# Parse List of Tuples.
+) -> Set[Tuple[int, ...]]:
+    """# Parse Set of Tuples.
     
-    Parse string argument into list of tuples of integers.
+    Parse string argument into set of tuples of integers.
 
     ## Args:
         * arg   (str):  Argument being passed.
 
     ## Returns:
-        * List[Tuple[int]]: List of tuples of integers.
+        * Set[Tuple[int, ...]]:    Set of tuples of integers.
     """
     return  literal_eval(arg)
     

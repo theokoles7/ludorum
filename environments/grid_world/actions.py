@@ -3,6 +3,8 @@
 Defines actions available in Grid World environment.
 """
 
+__all__ = ["GridWorldActions"]
+
 from typing import Dict, List, override, Tuple, Union
 
 from spaces import Discrete
@@ -94,3 +96,10 @@ class GridWorldActions(Discrete):
             * Dict[str, Union[str, Tuple[int, int]]]:   Action property mapping.
         """
         return self._actions_[index]
+    
+    def __len__(self) -> int:
+        """# Actions Length
+
+        Count of defined actions.
+        """
+        return len(self._actions_)

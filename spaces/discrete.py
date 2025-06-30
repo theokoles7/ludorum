@@ -3,6 +3,8 @@
 Defines a discrete (integer-indexed) space.
 """
 
+__all__ = ["Discrete"]
+
 from random             import randint
 
 from spaces.__base__    import Space

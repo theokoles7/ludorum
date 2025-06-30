@@ -3,6 +3,8 @@
 Defines a multi-discrete space (vector of discrete values).
 """
 
+__all__ = ["MultiDiscrete"]
+
 from random             import randint
 from typing             import Tuple
 

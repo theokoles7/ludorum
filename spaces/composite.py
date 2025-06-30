@@ -3,6 +3,8 @@
 Defines a composite space combining named subspaces.
 """
 
+__all__ = ["Composite"]
+
 from typing             import Any, Dict
 
 from spaces.__base__    import Space
@@ -50,10 +52,13 @@ class Composite(Space):
         """
         return  all([
                     isinstance(m, dict),
-                    all([
-                        key in self.subspaces,
-                        self.subspaces[key.contains[m[key]]]
-                    ]) for key in self.subspaces.items()
+                    all(
+                        [
+                            key in self.subspaces,
+                            self.subspaces[key.contains[m[key]]]
+                        ]
+                        for key in self.subspaces.items()
+                    ) 
                 ])
         
     def sample(self) -> Dict[str, Any]:

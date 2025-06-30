@@ -81,6 +81,15 @@ class Coin(Square):
         # Return reward for collecting coin.
         return value, self.coordinate, self.is_terminal, {"event": "collected a coin"}
     
+    @override
+    def reset(self) -> None:
+        """# Reset.
+
+        Reset square.
+        """
+        self._collected_:   bool =  False
+        self._visitations_: int =   0
+    
     # HELPERS ======================================================================================
     
     def _collect_(self) -> None:

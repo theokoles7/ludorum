@@ -3,6 +3,8 @@
 Defines a multi-dimensional continuous space.
 """
 
+__all__ = ["MultiContinuous"]
+
 from random             import uniform
 from typing             import Tuple, Union
 
