@@ -1,7 +1,9 @@
-"""Utilities package."""
+"""# ludorum.utilities
 
-__all__ = ["BANNER", "get_child", "get_logger", "TIMESTAMP"]
+Utilities package.
+"""
+
+__all__ = ["BANNER", "get_child", "get_logger"]
 
 from utilities.banner       import BANNER
 from utilities.logger       import get_child, get_logger
-from utilities.timestamp    import TIMESTAMP

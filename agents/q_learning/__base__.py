@@ -25,7 +25,7 @@ class QLearning(Agent):
     
     def __init__(self,
         action_space:       int,
-        state_space:        tuple[int],
+        state_space:        int,
         learning_rate:      float =     0.1,
         discount_rate:      float =     0.99,
         exploration_rate:   float =     1.0,
@@ -138,7 +138,7 @@ class QLearning(Agent):
         self._bootstrap_:           str =           bootstrap
         
         # Initialize Q-Table.
-        self._q_table_:             ndarray =       self.bootstrap_q_table(
+        self._q_table_:             ndarray =       self._bootstrap_q_table_(
                                                         states =    self._state_space_,
                                                         actions =   self._action_space_,
                                                         method =    bootstrap
@@ -147,7 +147,268 @@ class QLearning(Agent):
         # Log for debugging.
         self.__logger__.debug(f"Initialized Q-Learning agent {locals()}")
         
-    def bootstrap_q_table(self,
+    # PROPERTIES ===================================================================================
+    
+    @property
+    def alpha(self) -> float:
+        """# Learning Rate (float)
+
+        Controls how much new information overrides old information when updating Q-values.
+        """
+        return self._learning_rate_
+    
+    @property
+    def discount_rate(self) -> float:
+        """# Discount Rate (float)
+
+        Determines the importance of future rewards.
+        """
+        return self._discount_rate_
+    
+    @property
+    def epsilon(self) -> float:
+        """# Exploration Rate (float)
+
+        Probability that the agent will choose a random action, rather than selecting the action 
+        that is believed to be optimal based on its current knowledge (i.e., the action with the 
+        highest Q-value).
+        """
+        return self._exploration_rate_
+    
+    @property
+    def exploration_decay(self) -> float:
+        """# Exploration Decay (float)
+
+       Controls how quickly the exploration rate decreases over time. The exploration rate 
+       determines how often the agent selects random actions (explores) versus exploiting its 
+       learned knowledge (selecting the best action based on Q-values).
+        """
+        return self._exploration_decay_
+    
+    @property
+    def exploration_min(self) -> float:
+        """# Exploration Minimum (float)
+
+        Specifies the minimum exploration rate that the agent will reach after the exploration decay 
+        process.
+        """
+        return self._exploration_min_
+    
+    @property
+    def exploration_rate(self) -> float:
+        """# Exploration Rate (float)
+        
+        Probability that the agent will choose a random action, rather than selecting the action 
+        that is believed to be optimal based on its current knowledge (i.e., the action with the 
+        highest Q-value).
+        """
+        return self._exploration_rate_
+    
+    @property
+    def gamma(self) -> float:
+        """# Discount Rate (float)
+
+        Determines the importance of future rewards.
+        """
+        return self._discount_rate_
+    
+    @property
+    def learning_rate(self) -> float:
+        """# Learning Rate (float)
+
+        Controls how much new information overrides old information when updating Q-values.
+        """
+        return self._learning_rate_
+    
+    # SETTERS ======================================================================================
+    
+    @epsilon.setter
+    def epsilon(self,
+        value:  float
+    ) -> None:
+        """# Set Exploration Rate.
+        
+        Value will be set as the maximum between the value provided and the minimum exploration rate 
+        defined at agent initialization.
+
+        ## Args:
+            * value (float):    New exploration rate value.
+
+        ## Raises:
+            * AssertionError:   If value is not a float.
+        """
+        # Assert that value is a float.
+        assert isinstance(value, float), f"Value expected to be float, got {type(value)}"
+        
+        # Set new exploration rate.
+        self._exploration_rate_:    float = max(value, self.exploration_min)
+        
+    @exploration_rate.setter
+    def exploration_rate(self,
+        value:  float
+    ) -> None:
+        """# Set Exploration Rate.
+        
+        Value will be set as the maximum between the value provided and the minimum exploration rate 
+        defined at agent initialization.
+
+        ## Args:
+            * value (float):    New exploration rate value.
+
+        ## Raises:
+            * AssertionError:   If value is not a float.
+        """
+        # Assert that value is a float.
+        assert isinstance(value, float), f"Value expected to be float, got {type(value)}"
+        
+        # Set new exploration rate.
+        self._exploration_rate_:    float = max(value, self.exploration_min)
+    
+    # METHODS ======================================================================================
+        
+    def act(self,
+        state:  int
+    ) -> int:
+        """# Select Action.
+        
+        Choose an action using epsilon-greedy policy.
+
+        ## Args:
+            * state (int):  Current state of agent.
+
+        ## Returns:
+            * int:  Index of action chosen.
+        """
+        # Explore if exploration rate (epsilon) is higher than randomly chosen value.
+        if rand() < self._exploration_rate_: return randint(low = 0, high = self._action_space_)
+        
+        # Otherwise, choose max-value action from Q-table based on current state.
+        return argmax(self._q_table_[state]).item()
+    
+    def decay_epsilon(self) -> None:
+        """# Decay Exploration Rate.
+        
+        Update exploration rate to be the maximum between the current rate decayed or the defined 
+        minimum exploration rate value.
+        """
+        # Administer exploration rate decay.
+        self.exploration_rate *= self.exploration_decay
+        
+        # Log action for debugging.
+        self.__logger__.debug(f"Exploration rate updated to {self._exploration_rate_}")
+        
+    def load_model(self,
+        path:   str
+    ) -> None:
+        """# Load Model.
+        
+        Load agent's Q-table from file.
+
+        ## Args:
+            * path  (str):  Path at which model can be located/loaded.
+        """
+        # Log action for debugging.
+        self.__logger__.debug(f"Loading q-table from {path}")
+        
+        # Save Q-table to file.
+        self._q_table_: ndarray =   loadtxt(fname = path)
+    
+    def observe(self,
+        state:      int,
+        action:     int,
+        reward:     float,
+        next_state: int,
+        done:       bool
+    ) -> None:
+        """# Update Q-table.
+        
+        Update agent's Q-Table based on following rule:
+        
+        Q(s, a) ← Q(s, a) + α [R + γ max_a Q(s', a) - Q(s, a)]
+        
+        Where:
+            * α:                Learning rate (alpha)
+            * γ:                Discount rate (gamma)
+            * a:                Action submitted
+            * s:                State when action was submitted
+            * s':               State after action was taken
+            * R:                Reward/penalty yielded by action taken
+            * Q(s, a):          Current state:action value
+            * max_a Q(s', a):   Maximum value for the next state over all possible actions
+
+        ## Args:
+            * state         (int):      State of the agent before action being taken.
+            * action        (int):      Action chosen by agent.
+            * reward        (float):    Reward yielded by action taken.
+            * next_state    (int):      State of the agent after action is taken. 
+            * done          (bool):     Indicates if agent has reached end state.
+        """
+        # Log for debugging.
+        self.__logger__.debug(f"Updating Q-table[state: {state}, action: {action}, reward: {reward}]")
+        
+        # Define new action-state value in Q-table.
+        self._q_table_[state, action] +=    (
+                                                self._learning_rate_ * (
+                                                    reward + (
+                                                        (
+                                                            self._discount_rate_ * 
+                                                            0 if done else max(self._q_table_[next_state])
+                                                        )
+                                                    ) - self._q_table_[state][action]
+                                                )
+                                            )
+        
+    def save_config(self,
+        path:   str
+    ) -> None:
+        """# Save Model Configuration.
+
+        ## Args:
+            * path  (str):  Path at which agent confriguration file will be saved.
+        """
+        from json   import dump
+        from os     import makedirs
+        
+        # Ensure that path exists.
+        makedirs(name = path, exist_ok = True)
+        
+        # Save configuratino to JSON file.
+        dump(
+            obj =       {
+                            "learning_rate":        self._learning_rate_,
+                            "discount_rate":        self._discount_rate_,
+                            "exploration_rate":     self._exploration_rate_,
+                            "exploration_decay":    self._exploration_decay_,
+                            "exploration_min":      self._exploration_min_,
+                            "bootstrap":            self._bootstrap_
+                        },
+            fp =        open(f"{path}/q_learning_config.json", "w"),
+            indent =    2,
+            default =   str
+        )
+        
+        # Log save location.
+        self.__logger__.info(f"Q-Learning configuration saved to {path}/q_learning_config.json")
+        
+    def save_model(self,
+        path:   str
+    ) -> None:
+        """# Save Model
+        
+        Save agent's Q-table to file.
+
+        ## Args:
+            * path  (str):  Path at which model will be saved.
+        """
+        # Log action for debugging.
+        self.__logger__.debug(f"Saving q-table to {path}")
+        
+        # Save Q-table to file.
+        savetxt(fname = path, X = self._q_table_)
+    
+    # HELPERS ====================================================================================== 
+        
+    def _bootstrap_q_table_(self,
         states:     int,
         actions:    int,
         method:     str =   "zeros"
@@ -200,149 +461,3 @@ class QLearning(Agent):
             
             # Invalid Method Selection
             case _:                 raise ValueError(f"Invalid Q-Table initialization method provided: {method}")
-    
-    def decay_epsilon(self) -> None:
-        """# Decay Exploration Rate
-        
-        Update exploration rate to be the maximum between the current rate decayed or the defined 
-        minimum exploration rate value.
-        """
-        # Administer exploration rate decay.
-        self._exploration_rate_:    float = max([
-                                                # Decayed exploration rate.
-                                                self._exploration_rate_ * self._exploration_decay_,
-                                                
-                                                # Exploration rate minimum.
-                                                self._exploration_min_
-                                            ])
-        
-        # Log action for debugging.
-        self.__logger__.debug(f"Exploration rate updated to {self._exploration_rate_}")
-        
-    def load_model(self,
-        path:   str
-    ) -> None:
-        """# Load Model
-        
-        Load agent's Q-table from file.
-
-        ## Args:
-            * path  (str):  Path at which model can be located/loaded.
-        """
-        # Log action for debugging.
-        self.__logging__.debug(f"Loading q-table from {path}")
-        
-        # Save Q-table to file.
-        self._q_table_: ndarray =   loadtxt(fname = path)
-        
-    def save_config(self,
-        path:   str
-    ) -> None:
-        """# Save Model Configuration.
-
-        ## Args:
-            * path  (str):  Path at which agent confriguration file will be saved.
-        """
-        from json   import dump
-        from os     import makedirs
-        
-        # Ensure that path exists.
-        makedirs(name = path, exist_ok = True)
-        
-        # Save configuratino to JSON file.
-        dump(
-            obj =       {
-                            "learning_rate":        self._learning_rate_,
-                            "discount_rate":        self._discount_rate_,
-                            "exploration_rate":     self._exploration_rate_,
-                            "exploration_decay":    self._exploration_decay_,
-                            "exploration_min":      self._exploration_min_,
-                            "bootstrap":            self._bootstrap_
-                        },
-            fp =        open(f"{path}/q_learning_config.json", "w"),
-            indent =    2,
-            default =   str
-        )
-        
-        # Log save location.
-        self.__logger__.info(f"Q-Learning configuration saved to {path}/q_learning_config.json")
-        
-    def save_model(self,
-        path:   str
-    ) -> None:
-        """# Save Model
-        
-        Save agent's Q-table to file.
-
-        ## Args:
-            * path  (str):  Path at which model will be saved.
-        """
-        # Log action for debugging.
-        self.__logging__.debug(f"Saving q-table to {path}")
-        
-        # Save Q-table to file.
-        savetxt(fname = path, X = self._q_table_)  
-        
-    def select_action(self,
-        state:  int
-    ) -> int:
-        """# Select Action
-        
-        Choose an action using epsilon-greedy policy.
-
-        ## Args:
-            * state (int):  Current state of agent.
-
-        ## Returns:
-            * int:  Index of action chosen.
-        """
-        # Explore if exploration rate (epsilon) is higher than randomly chosen value.
-        if rand() < self._exploration_rate_: return randint(low = 0, high = self._action_space_)
-        
-        # Otherwise, choose max-value action from Q-table based on current state.
-        return argmax(self._q_table_[state]).item()  
-    
-    def update(self,
-        state:      int,
-        action:     int,
-        reward:     float,
-        next_state: list[int],
-        done:       bool
-    ) -> None:
-        """# Update Q-table
-        
-        Update agent's Q-Table based on following rule:
-        
-        Q(s, a) ← Q(s, a) + α [R + γ max_a Q(s', a) - Q(s, a)]
-        
-        Where:
-            * α:                Learning rate (alpha)
-            * γ:                Discount rate (gamma)
-            * a:                Action submitted
-            * s:                State when action was submitted
-            * s':               State after action was taken
-            * R:                Reward/penalty yielded by action taken
-            * Q(s, a):          Current state:action value
-            * max_a Q(s', a):   Maximum value for the next state over all possible actions
-
-        ## Args:
-            * state         (tuple[int]):   State of the agent before action being taken.
-            * action        (int):          Action chosen by agent.
-            * reward        (float):        Reward yielded by action taken.
-            * next_state    (tuple[int]):   State of the agent after action is taken. 
-            * done          (bool):         Indicates if agent has reached end state.
-        """
-        # Log for debugging.
-        self.__logger__.debug(f"Updating Q-table[state: {state}, action: {action}, reward: {reward}]")
-        
-        # Define new action-state value in Q-table.
-        self._q_table_[state, action] +=    (
-                                                self._learning_rate_ * (
-                                                    reward + (
-                                                        (
-                                                            self._discount_rate_ * 
-                                                            0 if done else max(self._q_table_[next_state])
-                                                        )
-                                                    ) - self._q_table_[state][action]
-                                                )
-                                            )

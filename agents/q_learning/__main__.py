@@ -2,7 +2,6 @@
 
 from logging                    import Logger
 
-from agents.q_learning.actions  import *
 from utilities                  import get_child
 
 def main(
@@ -19,12 +18,7 @@ def main(
                                             logger_name =   "q-learning.main"
                                         )
     
-    # Define mapping of actions to their respective entry points.
-    _actions_:  dict[str, callable] =   {
-                                            "play": play.main
-                                        }
-    
     try:# Execute action.
-        _actions_[action](**kwargs)
+        _logger_.debug("Executing Q-Learning action.")
     
     except Exception as e:  _logger_.critical(f"Unexpected error caught: {e}", exc_info = True)

@@ -1,4 +1,4 @@
-"""# ludorum.environments.__args__
+"""# ludorum.environments.args
 
 This module handles the registration of environment parsers defines in sub-packages.
 """

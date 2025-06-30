@@ -1,6 +1,6 @@
-# LUDORUM
+# Ludorum
 
-Ludorum is a suite of reinforcement learning agents and environments, modularly constructed to facilitate research and experiments.
+Ludorum is a frameowkr that facilitates experiments and research in reinforcement learning.
 
 ## [Documentation](./documentation/README.md):
 
@@ -12,4 +12,3 @@ Ludorum is a suite of reinforcement learning agents and environments, modularly 
 * [Code of Conduct](./CODE_OF_CONDUCT.md)
 * [Contributing](./CONTRIBUTING)
 * [License (GNU Public License v3)](./LICENSE)
-* [Style Guide](./documentation/style-guide.md)

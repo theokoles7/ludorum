@@ -1,11 +1,13 @@
-"""Drive application."""
+"""# ludorum.main
+
+Ludorum application driver.
+"""
 
 from argparse   import Namespace
 from logging    import Logger
 
 from __args__   import parse_ludorum_arguments
 from agents     import *
-from commands   import *
 from utilities  import BANNER, get_logger
 
 if __name__ == "__main__":
@@ -23,9 +25,7 @@ if __name__ == "__main__":
     
     # Define mapping of commands to their respective entry points.
     _commands_:     dict[str, callable] =   {
-                                                "nlm":          nlm.main,
                                                 "q-learning":   q_learning.main,
-                                                "render":       render.main
                                             }
     
     try:# Log banner

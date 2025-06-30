@@ -4,6 +4,7 @@ __all__ = ["register_grid_world_parser"]
 
 from argparse   import _ArgumentGroup, ArgumentParser, _SubParsersAction
 from ast        import literal_eval
+from typing     import Dict, List, Tuple
 
 def register_grid_world_parser(
     parent_subparser:   _SubParsersAction
@@ -160,7 +161,7 @@ def register_grid_world_parser(
 # Define function for parsing list of tuples.
 def list_of_tuples(
     arg:    str
-) -> list[tuple[int]]:
+) -> List[Tuple[int]]:
     """# Parse List of Tuples.
     
     Parse string argument into list of tuples of integers.
@@ -169,14 +170,14 @@ def list_of_tuples(
         * arg   (str):  Argument being passed.
 
     ## Returns:
-        * list[tuple[int]]: List of tuples of integers.
+        * List[Tuple[int]]: List of tuples of integers.
     """
     return  literal_eval(arg)
     
 # Define function for parsing list of dictionaries.
 def list_of_dictionaries(
     arg:    str
-) -> list[dict[str, int]]:
+) -> List[Dict[str, int]]:
     """# Parse List of Dictionaries.
     
     Parse string argument into list of dictionaries of string to tuples of integers.
@@ -185,6 +186,6 @@ def list_of_dictionaries(
         * arg   (str):  Argument being passed.
 
     ## Returns:
-        * list[dict[str, int]]: List of dictionaries.
+        * List[Dict[str, int]]: List of dictionaries.
     """
     return  literal_eval(arg)

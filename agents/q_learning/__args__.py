@@ -39,7 +39,7 @@ def register_q_learning_parser(
     _learning_:     _ArgumentGroup =    _parser_.add_argument_group(title = "Learning (Alpha)")
 
     _learning_.add_argument(
-        "--learning-rate", "-alpha",
+        "--learning-rate", "--alpha",
         dest =      "learning_rate",
         type =      float,
         default =   0.1,
@@ -54,7 +54,7 @@ def register_q_learning_parser(
     _discount_:     _ArgumentGroup =    _parser_.add_argument_group(title = "Discount (Gamma)")
     
     _discount_.add_argument(
-        "--discount-rate", "-gamma",
+        "--discount-rate", "--gamma",
         dest =      "discount_rate",
         type =      float,
         default =   0.99,
@@ -68,7 +68,7 @@ def register_q_learning_parser(
     _exploration_:  _ArgumentGroup =    _parser_.add_argument_group(title = "Exploration (Epsilon)")
     
     _exploration_.add_argument(
-        "--exploration-rate", "-epsilon",
+        "--exploration-rate", "--epsilon",
         dest =      "exploration_rate",
         type =      float,
         default =   1.0,
@@ -81,7 +81,7 @@ def register_q_learning_parser(
     )
     
     _exploration_.add_argument(
-        "--exploration-decay", "-epsilon-decay",
+        "--exploration-decay", "--epsilon-decay",
         dest =      "exploration_decay",
         type =      float,
         default =   0.99,
@@ -94,7 +94,7 @@ def register_q_learning_parser(
     )
     
     _exploration_.add_argument(
-        "--exploration-min", "-epsilon-min",
+        "--exploration-min", "--epsilon-min",
         dest =      "exploration_min",
         type =      float,
         default =   0.01,
@@ -133,9 +133,3 @@ def register_q_learning_parser(
     # +============================================================================================+
     # | END ARGUMENTS                                                                              |
     # +============================================================================================+
-    
-    # Deferred agent action parser registration imports.
-    from agents.q_learning.actions.__args__ import register_action_parsers
-    
-    # Register action parsers.
-    register_action_parsers(parent_subparser =  _subparser_)
