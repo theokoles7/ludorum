@@ -452,32 +452,29 @@ class Grid():
         
         String rendering of grid.
         """
-        # Initialize column index.
-        grid_string:    str =       (" " * 4) + " ".join(f" {column} " for column in range(self.columns)) +\
-                                    "\n   ┌" + ("───┬" * (self.columns - 1)) + "───┐"
+        # Predefine border and index strings.
+        column_index:   str =   (" " * 4) + " ".join(f" {column} " for column in range(self.columns))
+        top_border:     str =   "\n   ┌" + ((("─" * 3) + "┬") * (self.columns - 1)) + ("─" * 3) + "┐"
+        middle_line:    str =   "\n   ├" + ((("─" * 3) + "┼") * (self.columns - 1)) + ("─" * 3) + "┤"
+        bottom_border:  str =   "\n   └" + ((("─" * 3) + "┴") * (self.columns - 1)) + ("─" * 3) + "┘"
+        
+        # Initialize grid string to which rendering will be appended.
+        grid_string:    str =   column_index + top_border
         
         # For each row in grid...
         for r, row in enumerate(self._grid_):
             
             # Start new row with index.
-            grid_string             +=  f"\n {r} │"
+            grid_string     += f"\n {r} │"
             
             # For each square in row...
             for c, square in enumerate(row):
                 
-                # If this is where the agent is located...
-                if self._agent_ == (r, c):
-                    
-                    # Append agent symbol.
-                    grid_string     +=  " A │"
-                    
-                # Otherwise, append square symbol.
-                else: grid_string   +=  f" {square} │"
+                # Append square or agent symbol.
+                grid_string += f""" {"A" if self._agent_ == (r, c) else square} │"""
                 
-            # Append row separator.
-            grid_string             +=  ("\n   ├" + ("───┼" * (self.columns - 1)) + ("─" * 3) + "┤") \
-                                        if r != self.rows - 1                           \
-                                        else ("\n   └" + ("───┴" * (self.columns - 1)) + ("─" * 3) + "┘")
+            # Append row separator or bottom border.
+            grid_string     += middle_line if r != self.rows - 1 else bottom_border
                                         
         # Return grid representation.
         return grid_string

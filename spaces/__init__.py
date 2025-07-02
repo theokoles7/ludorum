@@ -7,6 +7,9 @@ __all__ =   [
                 # Abstract space.
                 "Space",
                 
+                # Box space.
+                "Box",
+                
                 # Composite space.
                 "Composite",
                 
@@ -21,6 +24,9 @@ __all__ =   [
 
 # Abstract space.
 from spaces.__base__            import Space
+
+# Box space.
+from spaces.box                 import Box
 
 # Composite space.
 from spaces.composite           import Composite

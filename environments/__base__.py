@@ -9,6 +9,8 @@ from abc        import ABC, abstractmethod
 from logging    import Logger
 from typing     import Any, Dict, Tuple
 
+from spaces     import Space
+
 class Environment(ABC):
     """Abstract Environment Class
     
@@ -23,18 +25,18 @@ class Environment(ABC):
     def __init__(self, **kwargs):
         """Initialize base Environment object."""
         # Declare logger member.
-        self.__logger__:        Logger
+        self.__logger__:            Logger
         
         # Declare attributes and their types.
-        self._action_space_:    Any
-        self._state_space_:     Any
+        self._action_space_:        Space
+        self._observation_space_:   Space
         
     # PROPERTIES ===================================================================================
     
     @property
     @abstractmethod
-    def action_space(self) -> Any:
-        """# Action Space (Any)
+    def action_space(self) -> Space:
+        """# Action Space
         
         This property should return the actions possible within the environment.
         """
@@ -42,8 +44,8 @@ class Environment(ABC):
     
     @property
     @abstractmethod
-    def state_space(self) -> Any:
-        """# State Space (Any)
+    def observation_space(self) -> Space:
+        """# Observation Space
         
         This property should return the quantification of possible states in which the environment 
         can be observed.
