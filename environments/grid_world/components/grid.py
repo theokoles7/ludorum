@@ -101,7 +101,7 @@ class Grid():
         
         # Define features.
         self._coins_:               Set[Tuple[int, int]] =              coins
-        self._goal_:                Set[Tuple[int, int]] =              goal
+        self._goal_:                Set[Tuple[int, int]] =              goal if goal is not None else {(self._rows_ - 1, self._columns_ - 1)}
         self._loss_:                Set[Tuple[int, int]] =              loss
         self._portals_:             List[Dict[str, Tuple[int, int]]] =  portals
         self._start_:               Tuple[int, int] =                   start
@@ -161,6 +161,9 @@ class Grid():
         
         # For each feature type and coordinate pair...
         for feature, coordinates in features.items():
+            
+            print(f"seen: {type(seen)}")
+            print(f"coordinates: {type(coordinates)}")
             
             # Make intersection.
             intersection:   Set[Tuple[int, int]] =  seen & coordinates
@@ -319,7 +322,7 @@ class Grid():
                 
                 # Return penalty for boundary collision.
                 return  self.collision_penalty, \
-                        self._agent_,    \
+                        self._agent_,           \
                         False,                  \
                         {"event": "collided with boundary"}
                         

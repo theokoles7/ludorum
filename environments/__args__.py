@@ -15,6 +15,8 @@ def register_environment_parsers(
     """
     # Deferred environment parser imports.
     from environments.grid_world    import register_grid_world_parser
+    from environments.tic_tac_toe   import register_tic_tac_toe_parser
     
     # Register environment parsers.
-    register_grid_world_parser(parent_subparser = parent_subparser)
+    register_grid_world_parser(parent_subparser =   parent_subparser)
+    register_tic_tac_toe_parser(parent_subparser =  parent_subparser)

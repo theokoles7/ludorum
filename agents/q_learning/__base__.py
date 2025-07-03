@@ -12,6 +12,8 @@ from numpy                  import argmax, full, loadtxt, max, ndarray, savetxt,
 from numpy.random           import normal, rand, randint, uniform
 
 from agents.__base__        import Agent
+from agents.components      import QTable
+from spaces                 import Space
 from utilities              import get_child
 
 class QLearning(Agent):
@@ -24,8 +26,8 @@ class QLearning(Agent):
     """
     
     def __init__(self,
-        action_space:       int,
-        state_space:        int,
+        action_space:       Space,
+        observation_space:  Space,
         learning_rate:      float =     0.1,
         discount_rate:      float =     0.99,
         exploration_rate:   float =     1.0,
@@ -37,9 +39,9 @@ class QLearning(Agent):
         """# Initialize Q-Learning Agent
 
         ## Args:
-            * action_space      (int):              Number of possible actions that the agent can 
+            * action_space      (Space):            Number of possible actions that the agent can 
                                                     take.
-            * state_space       (int):              Dimensions of the environment in which the 
+            * observation_space (Space):            Dimensions of the environment in which the 
                                                     agent will act.
             * learning_rate     (float, optional):  Controls how much new information overrides old 
                                                     information when updating Q-values. A higher 
@@ -120,8 +122,8 @@ class QLearning(Agent):
         self.__logger__:            Logger =        get_child("q-learning")
         
         # Define environment components.
-        self._state_space_:         int =           state_space
-        self._action_space_:        int =           action_space
+        self._action_space_:        Space =         action_space
+        self._observation_space_:   Space =         observation_space
         
         # Define learning parameters.
         self._learning_rate_:       float =         learning_rate
@@ -134,14 +136,10 @@ class QLearning(Agent):
         self._exploration_decay_:   float =         exploration_decay
         self._exploration_min_:     float =         exploration_min
         
-        # Define bootstrap method.
-        self._bootstrap_:           str =           bootstrap
-        
         # Initialize Q-Table.
-        self._q_table_:             ndarray =       self._bootstrap_q_table_(
-                                                        states =    self._state_space_,
-                                                        actions =   self._action_space_,
-                                                        method =    bootstrap
+        self._q_table_:             QTable =        QTable(
+                                                        action_space =      self._action_space_,
+                                                        bootstrap_method =  bootstrap
                                                     )
         
         # Log for debugging.
@@ -280,10 +278,10 @@ class QLearning(Agent):
             * int:  Index of action chosen.
         """
         # Explore if exploration rate (epsilon) is higher than randomly chosen value.
-        if rand() < self._exploration_rate_: return randint(low = 0, high = self._action_space_)
+        if rand() < self._exploration_rate_: return self._action_space_.sample()
         
         # Otherwise, choose max-value action from Q-table based on current state.
-        return argmax(self._q_table_[state]).item()
+        return self._q_table_.get_best_action(state = state)
     
     def decay_epsilon(self) -> None:
         """# Decay Exploration Rate.
@@ -311,7 +309,7 @@ class QLearning(Agent):
         self.__logger__.debug(f"Loading q-table from {path}")
         
         # Save Q-table to file.
-        self._q_table_: ndarray =   loadtxt(fname = path)
+        self._q_table_.load(path = path)
     
     def observe(self,
         state:      int,
@@ -350,11 +348,10 @@ class QLearning(Agent):
         self._q_table_[state, action] +=    (
                                                 self._learning_rate_ * (
                                                     reward + (
-                                                        (
-                                                            self._discount_rate_ * 
-                                                            0 if done else max(self._q_table_[next_state])
-                                                        )
-                                                    ) - self._q_table_[state][action]
+                                                            (self._discount_rate_ * 0) 
+                                                            if done 
+                                                            else self._q_table_.get_best_value(state = state)
+                                                    ) - self._q_table_[state, action]
                                                 )
                                             )
         
@@ -404,60 +401,4 @@ class QLearning(Agent):
         self.__logger__.debug(f"Saving q-table to {path}")
         
         # Save Q-table to file.
-        savetxt(fname = path, X = self._q_table_)
-    
-    # HELPERS ====================================================================================== 
-        
-    def _bootstrap_q_table_(self,
-        states:     int,
-        actions:    int,
-        method:     str =   "zeros"
-    ) -> ndarray:
-        """# Initialize Q-Table
-        
-        ## Methods:
-        * zeros:        Common choice when you assume that the agent has no prior knowledge of the 
-                        environment and should learn everything from scratch. All states and actions 
-                        start with equal value.
-        * random:       Useful when you want the agent to start with some variability in its 
-                        Q-values and potentially avoid any symmetry in the learning process. It may 
-                        help in environments where different actions in the same state can have 
-                        varying levels of importance or expected rewards.
-        * small-random: Similar to random initialization, but with smaller values to prevent large, 
-                        unrealistic initial biases. It's a good choice when you want to start with 
-                        some exploration but without the extreme variance that might come with 
-                        large random values.
-        * optimistic:   Used to encourage exploration by making every state-action pair initially 
-                        appear to be rewarding. Over time, the agent will update these values based 
-                        on the actual rewards received.
-
-        ## Args:
-            * states    (int):              Number of states to track in table.
-            * action    (int):              Number of actions to track in table.
-            * method    (str, optional):    Method by which q-table values will be initialized. One 
-                                            of "zeros", "random", "small-random", or "optimistic". 
-                                            Defaults to "zeros".
-
-        ## Returns:
-            * ndarray:  Array of `states` x `actions` dimensions, initialized using method specified.
-        """
-        # Log action for debugging.
-        self.__logger__.debug(f"Initializing {states}x{actions} Q-Table using {method} method.")
-        
-        # Match method.
-        match method:
-            
-            # Zeros
-            case "zeros":           return zeros(shape = (states, actions))
-            
-            # Random
-            case "random":          return uniform(low = -1, high = 1, size = (states, actions))
-            
-            # Small Random
-            case "small-random":    return normal(loc = 0, scale = 0.1, size = (states, actions))
-            
-            # Optimistic
-            case "optimistic":      return full(shape = (states, actions), fill_value = 10)
-            
-            # Invalid Method Selection
-            case _:                 raise ValueError(f"Invalid Q-Table initialization method provided: {method}")
+        self._q_table_.save(path = path)

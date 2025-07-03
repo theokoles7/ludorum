@@ -22,3 +22,7 @@ from agents.q_learning.__base__ import QLearning
 
 # Main process.
 from agents.q_learning.__main__ import main
+
+# Register agent.
+from agents.registry            import register_agent
+register_agent(name = "q-learning", constructor = QLearning)

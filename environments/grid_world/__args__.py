@@ -1,4 +1,7 @@
-"""Argument definitions and parsing for Grid World environment."""
+"""# ludorum.environments.grid_world.args
+
+Argument definitions & parsing for Grid World environment.
+"""
 
 __all__ = ["register_grid_world_parser"]
 
@@ -17,7 +20,7 @@ def register_grid_world_parser(
     # Initialize Grid World game parser
     _parser_:       ArgumentParser =    parent_subparser.add_parser(
         name =          "grid-world",
-        help =          """Grid World game.""",
+        help =          """Grid World environment.""",
         description =   """Grid World is a simple, discrete, grid-based environment where an agent 
                         navigates the grid to achieve a goal. The environment consists of a grid 
                         with rows and columns, where each grid cell can have different attributes, 
@@ -67,7 +70,7 @@ def register_grid_world_parser(
     _features_.add_argument(
         "--loss",
         type =      set_of_tuples,
-        default =   [],
+        default =   set(),
         help =      """Set of (row, column) coordinates at which loss sqaure(s) will be located. 
                     Example: "{(1, 0), ...}"."""
     )
@@ -75,7 +78,7 @@ def register_grid_world_parser(
     _features_.add_argument(
         "--walls",
         type =      set_of_tuples,
-        default =   [],
+        default =   set(),
         help =      """Set of (row, column) coordinates at which wall square(s) will be located. 
                     Example: "{(1, 0), ...}"."""
     )
@@ -83,7 +86,7 @@ def register_grid_world_parser(
     _features_.add_argument(
         "--coins",
         type =      set_of_tuples,
-        default =   [],
+        default =   set(),
         help =      """Set of (row, column) coordinates at which coin square(s) will be located. 
                     Example: "{(1, 0), ...}"."""
     )

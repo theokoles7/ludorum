@@ -133,3 +133,9 @@ def register_q_learning_parser(
     # +============================================================================================+
     # | END ARGUMENTS                                                                              |
     # +============================================================================================+
+    
+    # Deferred agent action parser registration imports.
+    from agents.q_learning.commands.__args__    import register_command_parsers
+    
+    # Register action parsers.
+    register_command_parsers(parent_subparser =  _subparser_)

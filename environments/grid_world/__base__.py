@@ -98,7 +98,7 @@ class GridWorld(Environment):
                                                                     episode.
         """
         # Initialize grid.
-        self._grid_:    Grid =              Grid(**locals())
+        self._grid_:    Grid =              Grid(**{k: v for k, v in locals().items() if k != "self"})
         
         # Define action space.
         self._actions_: GridWorldActions =  GridWorldActions()
@@ -124,7 +124,7 @@ class GridWorld(Environment):
     
     @override
     @property
-    def state_space(self) -> int:
+    def observation_space(self) -> int:
         """# State Space (int)
 
         Number of positions that agent can be in within grid.
@@ -162,7 +162,7 @@ class GridWorld(Environment):
                 - bool:     Done flag indicating if the episode has ended
                 - Dict:     Additional information
         """
-        return self.grid.move(coordinate = self._actions_[action])
+        return self.grid.move(action = self._actions_[action]["delta"])
     
     # DUNDERS ======================================================================================
     

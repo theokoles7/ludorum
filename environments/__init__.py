@@ -11,7 +11,10 @@ __all__ =   [
                 "GridWorld",
                 
                 # Argument parser registration.
-                "register_environment_parsers"
+                "register_environment_parsers",
+                
+                # Environment loading utility.
+                "load_environment"
             ]
 
 # Abstract environment class.
@@ -22,3 +25,6 @@ from environments.grid_world    import GridWorld
 
 # Argument parser registration.
 from environments.__args__      import register_environment_parsers
+
+# Environment loading utility.
+from environments.registry      import load_environment
