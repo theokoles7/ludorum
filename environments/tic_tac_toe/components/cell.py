@@ -7,6 +7,8 @@ __all__ = ["Cell"]
 
 from typing                                         import Tuple, Union
 
+from torch                                          import Tensor
+
 from environments.tic_tac_toe.components.players    import Player
 
 class Cell():
@@ -60,6 +62,14 @@ class Cell():
         Indicate if cell is empty or has an entry.
         """
         return self._glyph_ == Player.EMPTY
+    
+    @property
+    def onehot(self) -> Tensor:
+        """(Player) One-Hot Encoding.
+
+        One-hot encoding representation of cell's player entry.
+        """
+        return self._player_.onehot
     
     @property
     def player(self) -> int:

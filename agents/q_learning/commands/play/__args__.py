@@ -54,6 +54,27 @@ def register_play_parser(
         help =      """Maximum number of steps that agent is allowed to take in an individual 
                     episode."""
     )
+    
+    # ANIMATION ====================================================================================
+    
+    _animation_:    _ArgumentGroup =    _parser_.add_argument_group("Animation")
+    
+    _animation_.add_argument(
+        "--animate",
+        dest =      "animate",
+        action =    "store_true",
+        default =   False,
+        help =      """Animate agent interaction with the environment."""
+    )
+    
+    _animation_.add_argument(
+        "--animation-rate", "--rate",
+        dest =      "animation_rate",
+        type =      float,
+        default =   0.1,
+        help =      """Rate at which animation will be refreshed in seconds. Defaults to 0.1 
+                    seconds."""
+    )
 
     # +============================================================================================+
     # | END ARGUMENTS                                                                              |

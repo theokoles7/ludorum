@@ -44,6 +44,15 @@ class Environment(ABC):
     
     @property
     @abstractmethod
+    def name(self) -> str:
+        """# Environment Name.
+
+        Name of environment.
+        """
+        pass
+    
+    @property
+    @abstractmethod
     def observation_space(self) -> Space:
         """# Observation Space
         

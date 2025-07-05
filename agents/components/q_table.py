@@ -82,7 +82,7 @@ class QTable():
         ## Returns:
             * float:    Highest action value found for state.
         """
-        return np_max(self[state])
+        return np_max(self[self._normalize_state_(state = state)])
     
     def load(self,
         path:   Union[str, Path]
@@ -214,4 +214,4 @@ class QTable():
             * value (float):                                        Value being assigned at state, 
                                                                     action index.
         """
-        self._table_[self._normalize_state_(state = key[0])][key[1]] = value
+        self._table_[self._normalize_state_(state = key[0]), key[1]] = value

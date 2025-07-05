@@ -5,7 +5,9 @@ Tic-Tac-Toe environment interface.
 
 from typing                                 import Any, Dict, List, override, Optional, Tuple, Union
 
-from numpy                                  import int8, ndarray
+from numpy                                  import int8
+from numpy.typing                           import NDArray
+from torch                                  import Tensor
 
 from environments.__base__                  import Environment
 from environments.tic_tac_toe.components    import Board
@@ -52,6 +54,14 @@ class TicTacToe(Environment):
         
     # PROPERTIES ===================================================================================
     
+    @property
+    def array(self) -> NDArray:
+        """# (Board) to NDArray.
+
+        One-hot encoded array of board state.
+        """
+        return self._board_.array
+    
     @override
     @property
     def action_space(self) -> Discrete:
@@ -71,6 +81,14 @@ class TicTacToe(Environment):
         """
         return self._board_.has_winner or self._board_.is_draw
     
+    @property
+    def name(self) -> str:
+        """# (Environment) Name.
+
+        Name of environment.
+        """
+        return "Tic-Tac-Toe"
+    
     @override
     @property
     def observation_space(self) -> Box:
@@ -80,21 +98,29 @@ class TicTacToe(Environment):
         """
         return self._observation_space_
     
+    @property
+    def tensor(self) -> Tensor:
+        """# (Board) to Tensor.
+
+        One-hot encoded tensor of board state.
+        """
+        return self._board_.tensor
+    
     # METHODS ======================================================================================
     
     @override
-    def reset(self) -> ndarray:
+    def reset(self) -> NDArray:
         """# Reset Environment.
 
         ## Returns:
-            * ndarray:  State of environment after reset.
+            * NDArray:  State of environment after reset.
         """
         return self._board_.reset()
     
     @override
     def step(self,
         action: Union[int, Tuple[int, int]]
-    ) -> Tuple[float, ndarray, bool, Dict[str, Any]]:
+    ) -> Tuple[float, NDArray, bool, Dict[str, Any]]:
         """# Step.
         
         ## Args:
@@ -103,7 +129,7 @@ class TicTacToe(Environment):
         ## Returns:
             * Tuple[Any, float, bool, Dict]:
                 - float:    Reward received/penalty incurred
-                - ndarray:  Next state of the environment
+                - NDArray:  Next state of the environment
                 - bool:     Done flag indicating if the episode has ended
                 - Dict:     Additional information
         """

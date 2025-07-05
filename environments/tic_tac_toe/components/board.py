@@ -7,7 +7,9 @@ __all__ = ["Board"]
 
 from typing                                     import Any, Dict, List, Optional, Tuple
 
-from numpy                                      import array, ndarray
+from numpy                                      import array
+from numpy.typing                               import NDArray
+from torch                                      import stack, Tensor
 
 from environments.tic_tac_toe.components.cell   import Cell
 
@@ -55,6 +57,14 @@ class Board():
     # PROPERTIES ===================================================================================
     
     @property
+    def array(self) -> NDArray:
+        """# (Board) to NDArray.
+
+        One-hot encoded array of board state.
+        """
+        return self.tensor.numpy()
+    
+    @property
     def has_winner(self) -> bool:
         """# (Game) has Winner?
 
@@ -85,6 +95,16 @@ class Board():
         True if game has a winner or ended in draw.
         """
         return self.has_winner or self.is_draw
+    
+    @property
+    def tensor(self) -> Tensor:
+        """# (Board) to Tensor.
+
+        One-hot encoded tensor of board state.
+        """
+        return  stack(
+                    [cell.onehot for row in self._grid_ for cell in row]
+                ).reshape((self._size_, self._size_, 3), -1)
     
     @property
     def winner(self) -> Optional[int]:
@@ -118,7 +138,7 @@ class Board():
     def make_move(self,
         row:    int,
         column: int
-    ) -> Tuple[float, ndarray, bool, Dict[str, Any]]:
+    ) -> Tuple[float, NDArray, bool, Dict[str, Any]]:
         """# Make Move.
         
         Make move submitted if it's valid.
@@ -148,7 +168,7 @@ class Board():
         
     def make_move_by_action(self,
         action: int
-    ) -> Tuple[float, ndarray, bool, Dict[str, Any]]:
+    ) -> Tuple[float, NDArray, bool, Dict[str, Any]]:
         """# Make Move by Action.
         
         Make move submitted if it's valid.
@@ -168,7 +188,7 @@ class Board():
                     column =    action  % self._size_
                 )
     
-    def reset(self) -> ndarray:
+    def reset(self) -> NDArray:
         """# Reset (Board).
 
         Reset board to initial state.
@@ -188,7 +208,7 @@ class Board():
         # Return board state.
         return self.to_ndarray()
         
-    def to_ndarray(self) -> ndarray:
+    def to_ndarray(self) -> NDArray:
         """# (Board) to NDArray.
 
         ## Returns:

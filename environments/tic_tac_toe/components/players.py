@@ -5,7 +5,9 @@ This module provides the players for the Tic Tac Toe environment.
 
 __all__ = ["Player"]
 
-from enum   import Enum
+from enum           import Enum
+
+from torch          import equal, tensor, Tensor
 
 class Player(Enum):
     """(Tic-Tac-Toe) Glyph
@@ -13,19 +15,11 @@ class Player(Enum):
     This enumeration defines the players used to represent the Tic Tac Toe environment.
     """
     
-    EMPTY = {"number":  0, "symbol": " "}
-    X     = {"number":  1, "symbol": "X"}
-    O     = {"number": -1, "symbol": "O"}
+    EMPTY = {"number":  0, "symbol": " ", "onehot": tensor((1, 0, 0))}
+    X     = {"number":  1, "symbol": "X", "onehot": tensor((0, 1, 0))}
+    O     = {"number": -1, "symbol": "O", "onehot": tensor((0, 0, 1))}
     
     # PROPERTIES ===================================================================================
-    
-    @property
-    def symbol(self) -> str:
-        """# (Player) Symbol
-
-        Symbolic representation of the player (e.g., 'X', 'O').
-        """
-        return self.value["symbol"]
     
     @property
     def number(self) -> int:
@@ -34,6 +28,22 @@ class Player(Enum):
         Integer value of the player: +1 (X), -1 (O), or 0 (empty).
         """
         return self.value["number"]
+    
+    @property
+    def onehot(self) -> Tensor:
+        """# (Player) One-Hot Encoding.
+
+        One-hot encoding representation of player.
+        """
+        return self.value["onehot"]
+    
+    @property
+    def symbol(self) -> str:
+        """# (Player) Symbol
+
+        Symbolic representation of the player (e.g., 'X', 'O').
+        """
+        return self.value["symbol"]
     
     # CLASS METHODS ================================================================================
     
@@ -48,6 +58,9 @@ class Player(Enum):
         ## Args:
             * number    (int):  +1 for player or -1 for opponent.
 
+        ## Raises:
+            * ValueError:   If player number is not known.
+
         ## Returns:
             * Player:   Player initialized from value.
         """
@@ -57,8 +70,32 @@ class Player(Enum):
             # If it matches the value provided, return that player.
             if player.number == number: return player
             
-        # OTherwise, report invalid player number.
+        # Otherwise, report invalid player number.
         raise ValueError(f"No player found with number {number}")
+    
+    @classmethod
+    def from_onehot(cls,
+        encoding: Tensor
+    ) -> "Player":
+        """# (Player) from One-Hot Encoding.
+
+        ## Args:
+            * onehot    (Tensor):  One-hot encoding representation of player.
+
+        ## Raises:
+            * ValueError:   If player encoding is not known.
+
+        ## Returns:
+            * Player:   Player initialized from one-hot encoding.
+        """
+        # For each defined player...
+        for player in cls:
+            
+            # If it matches the value provided, return that player.
+            if equal(player.onehot, encoding): return player
+            
+        # Otherwise, report invalid player number.
+        raise ValueError(f"No player found with encoding {encoding}")
     
     @classmethod
     def from_symbol(cls,
@@ -70,6 +107,9 @@ class Player(Enum):
 
         ## Args:
             * symbol    (str):  "X" for player or "O" for opponent.
+
+        ## Raises:
+            * ValueError:   If player symbol is not known.
 
         ## Returns:
             * Player:   Player initialized from symbol.

@@ -5,6 +5,8 @@ Defines the basic greid component of Grid World.
 
 from typing                                     import Any, Dict, List, Optional, Set, Tuple, Union
 
+from termcolor                                  import colored
+
 from environments.grid_world.components.squares import *
 
 class Grid():
@@ -101,7 +103,7 @@ class Grid():
         
         # Define features.
         self._coins_:               Set[Tuple[int, int]] =              coins
-        self._goal_:                Set[Tuple[int, int]] =              goal if goal is not None else {(self._rows_ - 1, self._columns_ - 1)}
+        self._goal_:                Set[Tuple[int, int]] =              goal if goal is not None else {(self._rows_ - 1, self._columns_ - 1),}
         self._loss_:                Set[Tuple[int, int]] =              loss
         self._portals_:             List[Dict[str, Tuple[int, int]]] =  portals
         self._start_:               Tuple[int, int] =                   start
@@ -161,9 +163,6 @@ class Grid():
         
         # For each feature type and coordinate pair...
         for feature, coordinates in features.items():
-            
-            print(f"seen: {type(seen)}")
-            print(f"coordinates: {type(coordinates)}")
             
             # Make intersection.
             intersection:   Set[Tuple[int, int]] =  seen & coordinates
@@ -339,9 +338,9 @@ class Grid():
         self._agent_:   Tuple[int, int] =   state if state is not None else self._agent_
             
         # Return result of action.
-        return  value,                                                  \
-                self._coordinate_to_state_(coordinate = self._agent_),  \
-                done,                                                   \
+        return  value,          \
+                self._agent_,   \
+                done,           \
                 metadata
             
     def reset(self) -> int:
@@ -474,7 +473,7 @@ class Grid():
             for c, square in enumerate(row):
                 
                 # Append square or agent symbol.
-                grid_string += f""" {"A" if self._agent_ == (r, c) else square} │"""
+                grid_string += f""" {colored("A", color= "blue") if self._agent_ == (r, c) else square} │"""
                 
             # Append row separator or bottom border.
             grid_string     += middle_line if r != self.rows - 1 else bottom_border

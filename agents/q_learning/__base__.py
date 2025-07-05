@@ -345,13 +345,13 @@ class QLearning(Agent):
         self.__logger__.debug(f"Updating Q-table[state: {state}, action: {action}, reward: {reward}]")
         
         # Define new action-state value in Q-table.
-        self._q_table_[state, action] +=    (
+        self._q_table_[state][action] +=    (
                                                 self._learning_rate_ * (
                                                     reward + (
                                                             (self._discount_rate_ * 0) 
                                                             if done 
-                                                            else self._q_table_.get_best_value(state = state)
-                                                    ) - self._q_table_[state, action]
+                                                            else self._q_table_.get_best_value(state = next_state)
+                                                    ) - self._q_table_[state][action]
                                                 )
                                             )
         

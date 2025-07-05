@@ -5,9 +5,12 @@ Grid World game implementation.
 
 from typing                             import Any, Dict, List, override, Optional, Set, Tuple
 
+from numpy                              import int32
+
 from environments.__base__              import Environment
 from environments.grid_world.actions    import GridWorldActions
 from environments.grid_world.components import Grid
+from spaces                             import Discrete, MultiDiscrete
 
 class GridWorld(Environment):
     """# Grid World
@@ -98,10 +101,16 @@ class GridWorld(Environment):
                                                                     episode.
         """
         # Initialize grid.
-        self._grid_:    Grid =              Grid(**{k: v for k, v in locals().items() if k != "self"})
+        self._grid_:                Grid =              Grid(**{k: v for k, v in locals().items() if k != "self"})
+        
+        # Define actions.
+        self._actions_:             GridWorldActions =  GridWorldActions()
         
         # Define action space.
-        self._actions_: GridWorldActions =  GridWorldActions()
+        self._action_space_:        Discrete =          Discrete(n = 4)
+        
+        # Define observation space.
+        self._observation_space_:   MultiDiscrete =     MultiDiscrete(shape = (rows, columns))
         
     # PROPERTIES ===================================================================================
     
@@ -112,7 +121,7 @@ class GridWorld(Environment):
 
         Number of possible actions within Grid World environment.
         """
-        return len(self._actions_)
+        return self._action_space_
     
     @property
     def grid(self) -> Grid:
@@ -121,6 +130,14 @@ class GridWorld(Environment):
         Environment's grid component (2D matrix of Squares).
         """
         return self._grid_
+    
+    @property
+    def name(self) -> str:
+        """# (Environment) Name.
+
+        Name of environment.
+        """
+        return "Grid World"
     
     @override
     @property

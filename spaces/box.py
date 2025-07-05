@@ -34,8 +34,8 @@ class Box(Space):
                                                         float.
         """
         # Define bounds.
-        self._lower_:   Union[int, float] =             float(lower)
-        self._upper_:   Union[int, float] =             float(upper)
+        self._lower_:   Union[int, float] =             lower
+        self._upper_:   Union[int, float] =             upper
         
         # Define shape.
         self._shape_:   Tuple[Union[int, float], ...] = shape
