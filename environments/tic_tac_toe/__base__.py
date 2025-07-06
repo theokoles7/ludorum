@@ -3,12 +3,14 @@
 Tic-Tac-Toe environment interface.
 """
 
+from random                                     import choice
 from typing                                 import Any, Dict, List, override, Optional, Tuple, Union
 
 from numpy                                  import int8
 from numpy.typing                           import NDArray
 from torch                                  import Tensor
 
+from agents                                 import Agent
 from environments.__base__                  import Environment
 from environments.tic_tac_toe.components    import Board
 from spaces                                 import Box, Discrete
@@ -27,7 +29,8 @@ class TicTacToe(Environment):
         win_reward:     Optional[float] =    1.0,
         loss_penalty:   Optional[float] =   -1.0,
         draw_penalty:   Optional[float] =   -0.5,
-        step_penalty:   Optional[float] =   -0.1
+        step_penalty:   Optional[float] =   -0.1,
+        **kwargs
     ):
         """# Instantiate Tic-Tac-Toe (Environment).
 
@@ -40,11 +43,11 @@ class TicTacToe(Environment):
                                         -0.1.
         """
         # Initialize game board.
-        self._board_:               Board =     Board(**locals())
+        self._board_:               Board =     Board(**{k: v for k, v in locals().items() if k != "self"})
         self._size_:                int =       size
         
         # Define action & observation spaces.
-        self._action_space_:        Discrete =  Discrete(n = self._size ** 2)
+        self._action_space_:        Discrete =  Discrete(n = self._size_ ** 2)
         self._observation_space_:   Box =       Box(
                                                     lower = -1,
                                                     upper = 1,
@@ -137,13 +140,19 @@ class TicTacToe(Environment):
         match action:
             
             # Integer.
-            case int() as a:    return self._board_.make_move_by_action(action = a)
+            case int() as a:    reward, state, done, info = self._board_.make_move_by_action(action = a)
             
             # Tuple.
-            case tuple() as a:  return self._board_.make_move(row = a[0], column = a[1])
+            case tuple() as a:  reward, state, done, info = self._board_.make_move(row = a[0], column = a[1])
             
             # Invalid action.
             case _:             raise TypeError(f"Action expected to be integer or coordinate, got {type(action)}")
+            
+        # If game is not over, opponent takes turn.
+        if not done: self._board_.make_move_by_action(action = choice(self._board_.valid_actions))
+        
+        # Return actin results.
+        return reward, state, done, info
     
     # DUNDERS ======================================================================================
     

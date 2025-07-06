@@ -27,7 +27,8 @@ class Board():
         win_reward:     Optional[float] =    1.0,
         loss_penalty:   Optional[float] =   -1.0,
         draw_penalty:   Optional[float] =   -0.5,
-        step_penalty:   Optional[float] =   -0.1
+        step_penalty:   Optional[float] =   -0.1,
+        **kwargs
     ):
         """# Instantiate (Tic-Tac-Toe) Board.
 
@@ -105,6 +106,14 @@ class Board():
         return  stack(
                     [cell.onehot for row in self._grid_ for cell in row]
                 ).reshape((self._size_, self._size_, 3), -1)
+        
+    @property
+    def valid_actions(self) -> List[int]:
+        """# Valid Actions.
+
+        List of actions that are valid given current board state.
+        """
+        return [a for a in range(self._size_ ** 2) if self._action_is_valid_(a)]
     
     @property
     def winner(self) -> Optional[int]:
@@ -115,14 +124,14 @@ class Board():
         # Initialize lines for validation.
         lines:  List[List[Cell]] =  [[self._grid_[r][c] for c in range(self._size_)] for r in range(self._size_)]   +\
                                     [[self._grid_[c][r] for c in range(self._size_)] for r in range(self._size_)]   +\
-                                    [self._grid_[i][i] for i in range(self._size_)]                                 +\
-                                    [self._grid_[i][self._size_ - i - 1] for i in range(self._size_)]
+                                    [[self._grid_[i][i] for i in range(self._size_)]]                               +\
+                                    [[self._grid_[i][self._size_ - i - 1] for i in range(self._size_)]]
         
         # For each line...
         for line in lines:
             
             # Compute sum of line.
-            total:  int =   sum(cell.player.number for cell in line)
+            total:  int =   sum(cell.player for cell in line)
                 
             # Player wins.
             if total ==  self._size_:   return 1
@@ -155,7 +164,14 @@ class Board():
                 - Dict:     Additional information
         """
         # If move is not currently valid, it cannot be made.
-        if not self._move_is_valid_(row = row, column = column): return False
+        if not self._move_is_valid_(row = row, column = column):
+            
+            return  (
+                        self._step_penalty_,
+                        self.array,
+                        self.is_over,
+                        {"event": "attempted invalid move"}
+            )
         
         # Otherwise, mark cell.
         self._grid_[row][column].mark(player = self._current_player_)
@@ -164,7 +180,12 @@ class Board():
         self._switch_player_()
         
         # Return results.
-        return self._evaluate_move_(), self.to_ndarray(), self.is_over, {}
+        return  (
+                    self._evaluate_move_(),
+                    self.array,
+                    self.is_over,
+                    {"event": f"made move at ({row}, {column})"}
+                )
         
     def make_move_by_action(self,
         action: int

@@ -61,7 +61,7 @@ class Cell():
         
         Indicate if cell is empty or has an entry.
         """
-        return self._glyph_ == Player.EMPTY
+        return self._player_ == Player.EMPTY
     
     @property
     def onehot(self) -> Tensor:
@@ -106,7 +106,7 @@ class Cell():
         if not self.is_empty: return False
         
         # Set cell.
-        self.set(player = player)
+        self._set_player_(player = player)
     
     def reset(self) -> None:
         """# Reset (Cell).
@@ -129,7 +129,7 @@ class Cell():
         match player:
             
             # Object.
-            case Player() as p: self._player_:  Player = p
+            case Player() as p: self._player_:  Player =    p
             
             # Number value.
             case int() as n:    self._player_:  Player =    Player.from_number(number = n)
